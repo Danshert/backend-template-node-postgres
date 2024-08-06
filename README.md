@@ -13,6 +13,18 @@ PORT=3000
 PUBLIC_PATH=public
 ```
 
+Inicializar la base de datos
+
+```
+docker compose up -d
+```
+
+Generar migración de la base de datos
+
+```
+npx prisma migrate dev --name init
+```
+
 Ejecutar proyecto
 
 ```
