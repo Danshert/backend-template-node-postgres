@@ -14,10 +14,9 @@ export class UserEntity {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static fromObject(object: { [key: string]: any }) {
-		const { id, _id, name, email, emailValidated, password, role, img } =
-			object;
+		const { id, name, email, emailValidated, password, role, img } = object;
 
-		if (!_id && !id) throw CustomError.badRequest('Missing id');
+		if (!id) throw CustomError.badRequest('Missing id');
 		if (!name) throw CustomError.badRequest('Missing name');
 		if (!email) throw CustomError.badRequest('Missing email');
 
@@ -29,7 +28,7 @@ export class UserEntity {
 		if (!role) throw CustomError.badRequest('Missing role');
 
 		return new UserEntity(
-			_id || id,
+			id,
 			name,
 			email,
 			emailValidated,
