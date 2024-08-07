@@ -1,3 +1,4 @@
+import path from 'path';
 import { Request, Response } from 'express';
 
 import { AuthService } from '../services/auth.service';
@@ -51,5 +52,24 @@ export class AuthController {
 			.validateToken(token)
 			.then((resp) => response.json(resp))
 			.catch((error) => this.handleError(error, response));
+	};
+
+	validateEmail = (request: Request, response: Response) => {
+		const { token } = request.params;
+
+		this.authService
+			.validateEmail(token)
+			.then(() =>
+				response.sendFile(
+					// eslint-disable-next-line no-undef
+					path.join(__dirname, `../html/emailvalidated.html`),
+				),
+			)
+			.catch(() =>
+				response.sendFile(
+					// eslint-disable-next-line no-undef
+					path.join(__dirname, `../html/expiredToken.html`),
+				),
+			);
 	};
 }

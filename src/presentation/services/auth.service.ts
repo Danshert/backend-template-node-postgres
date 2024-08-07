@@ -1,15 +1,17 @@
 /* eslint-disable no-unused-vars */
 import { prisma } from '../../data/postgres';
 
+import { EmailService } from './email.service';
+
 import { LoginUserDto, RegisterUserDto } from '../../domain/dtos/auth';
 
 import { UserEntity } from '../../domain/entities';
 import { CustomError } from '../../domain/errors';
 
-import { JwtAdapter, bcryptAdapter } from '../../config';
+import { JwtAdapter, bcryptAdapter, envs } from '../../config';
 
 export class AuthService {
-	constructor() {}
+	constructor(private readonly emailService: EmailService) {}
 
 	public async registerUser(registerUserDto: RegisterUserDto) {
 		const existUser = await prisma.user.findFirst({
@@ -19,6 +21,8 @@ export class AuthService {
 		if (existUser) throw CustomError.badRequest('Email already exist');
 
 		try {
+			await this.sendEmailValidationLink(registerUserDto.email);
+
 			const user = await prisma.user.create({
 				data: {
 					...registerUserDto,
@@ -89,5 +93,56 @@ export class AuthService {
 		const { password, ...userEntity } = UserEntity.fromObject(user);
 
 		return { user: userEntity, token: newToken };
+	};
+
+	private sendEmailValidationLink = async (email: string) => {
+		const token = await JwtAdapter.generateToken({ email });
+
+		if (!token) {
+			throw CustomError.internalServer('Error getting token');
+		}
+
+		const link = `${envs.WEB_SERVICE_URL}/auth/validate-email/${token}`;
+
+		const html = `
+			<h1>Validate your email</h1>
+			<p>Click on the following link to validate your email</p>
+			<a href="${link}">Validate your email: ${email}</a>
+		`;
+
+		const options = {
+			to: email,
+			subject: 'Validate your email',
+			htmlBody: html,
+		};
+
+		const isSet = await this.emailService.sendEmail(options);
+
+		if (!isSet) {
+			throw CustomError.internalServer('Error senidng email');
+		}
+
+		return true;
+	};
+
+	public validateEmail = async (token: string) => {
+		const payload = await JwtAdapter.validateToken(token);
+		if (!payload) throw CustomError.unauthorized('Invalid token');
+
+		const { email } = payload as { email: string };
+		if (!email) throw CustomError.internalServer('Email not in token');
+
+		const user = await prisma.user.findFirst({
+			where: { email },
+		});
+
+		if (!user) throw CustomError.internalServer('Email not exists');
+
+		await prisma.user.update({
+			where: { email },
+			data: { emailValidated: true },
+		});
+
+		return true;
 	};
 }
