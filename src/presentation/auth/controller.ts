@@ -2,7 +2,11 @@ import path from 'path';
 import { Request, Response } from 'express';
 
 import { AuthService } from '../services/auth.service';
-import { LoginUserDto, RegisterUserDto } from '../../domain/dtos/auth';
+import {
+	LoginUserDto,
+	RegisterUserDto,
+	UpdateUserDto,
+} from '../../domain/dtos/auth';
 import { CustomError } from '../../domain/errors';
 
 export class AuthController {
@@ -38,6 +42,17 @@ export class AuthController {
 
 		this.authService
 			.loginUser(loginUserDto!)
+			.then((user) => response.json(user))
+			.catch((error) => this.handleError(error, response));
+	};
+
+	updateUser = (request: Request, response: Response) => {
+		const [error, updateUserDto] = UpdateUserDto.create(request.body);
+
+		if (error) return response.status(400).json({ error });
+
+		this.authService
+			.updateUser(updateUserDto!)
 			.then((user) => response.json(user))
 			.catch((error) => this.handleError(error, response));
 	};

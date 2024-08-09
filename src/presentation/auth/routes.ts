@@ -21,6 +21,7 @@ export class AuthRoutes {
 
 		router.post('/login', controller.loginUser);
 		router.post('/register', controller.registerUser);
+		router.post('/update', controller.updateUser);
 
 		router.get('/validate-token/:token', controller.validateToken);
 		router.get('/validate-email/:token', controller.validateEmail);

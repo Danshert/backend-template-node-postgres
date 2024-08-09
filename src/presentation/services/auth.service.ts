@@ -3,7 +3,11 @@ import { prisma } from '../../data/postgres';
 
 import { EmailService } from './email.service';
 
-import { LoginUserDto, RegisterUserDto } from '../../domain/dtos/auth';
+import {
+	LoginUserDto,
+	RegisterUserDto,
+	UpdateUserDto,
+} from '../../domain/dtos/auth';
 
 import { UserEntity } from '../../domain/entities';
 import { CustomError } from '../../domain/errors';
@@ -66,6 +70,37 @@ export class AuthService {
 			return { user: userEntity, token };
 		} else {
 			throw CustomError.unauthorized(`Invalid data`);
+		}
+	}
+
+	public async updateUser(updateUserDto: UpdateUserDto) {
+		if (updateUserDto.password) {
+			updateUserDto.password = bcryptAdapter.hash(updateUserDto.password);
+		}
+
+		try {
+			const user = await prisma.user.update({
+				where: { id: updateUserDto.id },
+				data: updateUserDto,
+			});
+
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { password, ...updatedUser } = {
+				...UserEntity.fromObject(user),
+				...updateUserDto,
+			};
+
+			const token = await JwtAdapter.generateToken({
+				id: updatedUser.id,
+			});
+
+			if (!token) {
+				throw CustomError.internalServer('Error while creating JWT');
+			}
+
+			return { user: updatedUser, token };
+		} catch {
+			throw CustomError.notFound(`User not found`);
 		}
 	}
 
