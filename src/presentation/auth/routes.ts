@@ -22,9 +22,17 @@ export class AuthRoutes {
 		router.post('/login', controller.loginUser);
 		router.post('/register', controller.registerUser);
 		router.post('/update', controller.updateUser);
+		router.post('/change-password', controller.changePassword);
 
 		router.get('/validate-token/:token', controller.validateToken);
 		router.get('/validate-email/:token', controller.validateEmail);
+
+		router.get(
+			'/request-password-change/:email',
+			controller.requestPasswordChange,
+		);
+
+		router.get('/new-password/:token', controller.newPassword);
 
 		return router;
 	}

@@ -2,11 +2,14 @@ import path from 'path';
 import { Request, Response } from 'express';
 
 import { AuthService } from '../services/auth.service';
+
 import {
+	ChangePasswordDto,
 	LoginUserDto,
 	RegisterUserDto,
 	UpdateUserDto,
 } from '../../domain/dtos/auth';
+
 import { CustomError } from '../../domain/errors';
 
 export class AuthController {
@@ -86,5 +89,50 @@ export class AuthController {
 					path.join(__dirname, `../html/expiredToken.html`),
 				),
 			);
+	};
+
+	requestPasswordChange = (request: Request, response: Response) => {
+		const { email } = request.params;
+
+		if (!email)
+			return response.status(400).json({ error: 'Email required' });
+
+		this.authService
+			.requestPasswordChange(email)
+			.then((resp) => response.json(resp))
+			.catch((error) => this.handleError(error, response));
+	};
+
+	newPassword = (request: Request, response: Response) => {
+		const { token } = request.params;
+
+		this.authService
+			.validateTokenToChangePassword(token)
+			.then(() =>
+				response.sendFile(
+					// eslint-disable-next-line no-undef
+					path.join(__dirname, `../html/changePassword.html`),
+				),
+			)
+			.catch(() =>
+				response.sendFile(
+					// eslint-disable-next-line no-undef
+					path.join(__dirname, `../html/expiredToken.html`),
+				),
+			);
+	};
+
+	changePassword = (request: Request, response: Response) => {
+		const [error, changePasswordDto] = ChangePasswordDto.create(
+			request.body,
+		);
+
+		if (error)
+			return response.status(400).json({ ok: false, message: error });
+
+		this.authService
+			.changePassword(changePasswordDto!)
+			.then((resp) => response.json(resp))
+			.catch((error) => this.handleError(error, response));
 	};
 }

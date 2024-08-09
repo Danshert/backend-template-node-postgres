@@ -4,6 +4,7 @@ import { prisma } from '../../data/postgres';
 import { EmailService } from './email.service';
 
 import {
+	ChangePasswordDto,
 	LoginUserDto,
 	RegisterUserDto,
 	UpdateUserDto,
@@ -116,9 +117,7 @@ export class AuthService {
 			throw CustomError.internalServer('Error while creating JWT');
 		}
 
-		const user = await prisma.user.findFirst({
-			where: { id },
-		});
+		const user = await prisma.user.findFirst({ where: { id } });
 
 		if (!user) {
 			throw CustomError.internalServer('Error while getting user');
@@ -179,5 +178,78 @@ export class AuthService {
 		});
 
 		return true;
+	};
+
+	public requestPasswordChange = async (email: string) => {
+		const user = await prisma.user.findFirst({ where: { email } });
+
+		if (!user) throw CustomError.internalServer('Email not exists');
+
+		await this.sendEmailChangePasswordLink(user.email);
+
+		return { ok: true, message: 'Email sended' };
+	};
+
+	private sendEmailChangePasswordLink = async (email: string) => {
+		const token = await JwtAdapter.generateToken({ email });
+
+		if (!token) {
+			throw CustomError.internalServer('Error getting token');
+		}
+
+		const link = `${envs.WEB_SERVICE_URL}/auth/new-password/${token}`;
+
+		const html = `
+			<h1>Change your password</h1>
+			<p>Click on the following link to change your password</p>
+			<a href="${link}">Change your password</a>
+		`;
+
+		const options = {
+			to: email,
+			subject: 'Change your password',
+			htmlBody: html,
+		};
+
+		const isSet = await this.emailService.sendEmail(options);
+
+		if (!isSet) {
+			throw CustomError.internalServer('Error senidng email');
+		}
+
+		return true;
+	};
+
+	public validateTokenToChangePassword = async (token: string) => {
+		const payload = await JwtAdapter.validateToken(token);
+		if (!payload) throw CustomError.unauthorized('Invalid token');
+
+		const { email } = payload as { email: string };
+
+		const user = await prisma.user.findFirst({ where: { email } });
+
+		if (!user) {
+			throw CustomError.internalServer('Error while getting user');
+		}
+
+		return true;
+	};
+
+	public changePassword = async (changePasswordDto: ChangePasswordDto) => {
+		const payload = await JwtAdapter.validateToken(changePasswordDto.token);
+		if (!payload) throw CustomError.unauthorized('Invalid token');
+
+		const { email } = payload as { email: string };
+
+		const user = await prisma.user.update({
+			where: { email },
+			data: { password: bcryptAdapter.hash(changePasswordDto.password) },
+		});
+
+		if (!user) {
+			throw CustomError.internalServer('Error while getting user');
+		}
+
+		return { ok: true, message: 'Password changed' };
 	};
 }
