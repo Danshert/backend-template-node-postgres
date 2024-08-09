@@ -28,23 +28,14 @@ export class AuthService {
 		try {
 			await this.sendEmailValidationLink(registerUserDto.email);
 
-			const user = await prisma.user.create({
+			await prisma.user.create({
 				data: {
 					...registerUserDto,
 					password: bcryptAdapter.hash(registerUserDto.password),
 				},
 			});
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, ...userEntity } = UserEntity.fromObject(user);
-
-			const token = await JwtAdapter.generateToken({ id: user.id });
-
-			if (!token) {
-				throw CustomError.internalServer('Error while creating JWT');
-			}
-
-			return { user: userEntity, token };
+			return { ok: true, message: 'Account created.' };
 		} catch (error) {
 			throw CustomError.internalServer(`${error}`);
 		}
@@ -59,8 +50,13 @@ export class AuthService {
 			user && bcryptAdapter.compare(loginUserDto.password, user.password);
 
 		if (user && isMatch) {
+			if (!user.emailValidated) {
+				throw CustomError.unauthorized(`Account not activated`);
+			}
+
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, ...userEntity } = UserEntity.fromObject(user);
+			const { password, emailValidated, ...userEntity } =
+				UserEntity.fromObject(user);
 
 			const token = await JwtAdapter.generateToken({ id: user.id });
 
@@ -86,7 +82,7 @@ export class AuthService {
 			});
 
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, ...updatedUser } = {
+			const { password, emailValidated, ...updatedUser } = {
 				...UserEntity.fromObject(user),
 				...updateUserDto,
 			};
@@ -123,8 +119,13 @@ export class AuthService {
 			throw CustomError.internalServer('Error while getting user');
 		}
 
+		if (!user.emailValidated) {
+			throw CustomError.unauthorized(`Account not activated`);
+		}
+
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { password, ...userEntity } = UserEntity.fromObject(user);
+		const { password, emailValidated, ...userEntity } =
+			UserEntity.fromObject(user);
 
 		return { user: userEntity, token: newToken };
 	};
