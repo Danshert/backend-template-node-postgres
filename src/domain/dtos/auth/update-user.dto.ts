@@ -5,6 +5,7 @@ export class UpdateUserDto {
 		public id: string,
 		public name: string,
 		public password: string,
+		public updatedAt: Date,
 	) {}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,6 +16,6 @@ export class UpdateUserDto {
 		if (!name) return ['Missing name'];
 		if (password && password.length < 6) return ['Password too short'];
 
-		return [undefined, new UpdateUserDto(id, name, password)];
+		return [undefined, new UpdateUserDto(id, name, password, new Date())];
 	}
 }
