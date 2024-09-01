@@ -55,7 +55,7 @@ export class AuthController {
 		if (error) return response.status(400).json({ error });
 
 		this.authService
-			.updateUser(updateUserDto!)
+			.updateUser(updateUserDto!, request.body.user)
 			.then((user) => response.json(user))
 			.catch((error) => this.handleError(error, response));
 	};

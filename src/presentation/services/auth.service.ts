@@ -70,7 +70,11 @@ export class AuthService {
 		}
 	}
 
-	public async updateUser(updateUserDto: UpdateUserDto) {
+	public async updateUser(updateUserDto: UpdateUserDto, user: UserEntity) {
+		if (updateUserDto.id !== user.id) {
+			throw CustomError.unauthorized(`You cannot modify this user.`);
+		}
+
 		if (updateUserDto.password) {
 			updateUserDto.password = bcryptAdapter.hash(updateUserDto.password);
 		}
