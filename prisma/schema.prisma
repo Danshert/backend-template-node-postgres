@@ -28,4 +28,17 @@ model User {
   role Role @default(USER)
   createdAt DateTime @db.Timestamp() @default(now())
   updatedAt DateTime @db.Timestamp() @default(now())
+  board board[]
+}
+
+model board {
+  id String @id @default(uuid())
+  name String @db.VarChar(200)
+  isActive Boolean @default(true)
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @default(now())
+
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
 }
