@@ -13,8 +13,6 @@ export class CreateBoardDto {
 		if (!name) return ['Missing name'];
 		if (!userId) return ['Missing user'];
 
-		// if (!Validators.isMongoId(userId)) return ["It's not a valid ID."];
-
 		return [undefined, new CreateBoardDto(name, userId.toString())];
 	}
 }
