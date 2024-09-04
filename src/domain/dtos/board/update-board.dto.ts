@@ -2,26 +2,18 @@
 export class UpdateBoardDto {
 	private constructor(
 		public readonly id: string,
+		public readonly userId: string,
 		public readonly name: string,
 		public readonly isActive: boolean,
 		public readonly updatedAt: Date,
 	) {}
 
-	get values() {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const returnObj: { [key: string]: any } = {};
-
-		if (this.id) returnObj.id = this.id;
-		if (this.name) returnObj.name = this.name;
-
-		return returnObj;
-	}
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static create(object: { [key: string]: any }): [string?, UpdateBoardDto?] {
-		const { id, name = false, isActive = true } = object;
+	static create(props: { [key: string]: any }): [string?, UpdateBoardDto?] {
+		const { id, userId, name = false, isActive = true } = props;
 
 		if (!id) return ['Missing id'];
+		if (!userId) return ['Missing user id'];
 		if (!name) return ['Missing name'];
 
 		let isActiveBoolean = isActive;
@@ -32,7 +24,7 @@ export class UpdateBoardDto {
 
 		return [
 			undefined,
-			new UpdateBoardDto(id, name, isActiveBoolean, new Date()),
+			new UpdateBoardDto(id, userId, name, isActiveBoolean, new Date()),
 		];
 	}
 }

@@ -1,14 +1,16 @@
 /* eslint-disable no-unused-vars */
-export class GetBoardsdDto {
+export class GetBoardDto {
 	private constructor(
+		public readonly id: string,
 		public readonly userId: string,
 		public readonly isActive: boolean,
 	) {}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static create(props: { [key: string]: any }): [string?, GetBoardsdDto?] {
-		const { userId, isActive = true } = props;
+	static create(props: { [key: string]: any }): [string?, GetBoardDto?] {
+		const { id, userId, isActive = true } = props;
 
+		if (!id) return ['Missing user'];
 		if (!userId) return ['Missing user'];
 
 		let isActiveBoolean = isActive;
@@ -17,6 +19,6 @@ export class GetBoardsdDto {
 			isActiveBoolean = isActive === 'true';
 		}
 
-		return [undefined, new GetBoardsdDto(userId, isActiveBoolean)];
+		return [undefined, new GetBoardDto(id, userId, isActiveBoolean)];
 	}
 }

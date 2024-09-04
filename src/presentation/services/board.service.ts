@@ -1,10 +1,14 @@
-import { BoardEntity, UserEntity } from '../../domain/entities';
+import { BoardEntity } from '../../domain/entities';
 
 import { prisma } from '../../data/postgres';
 
 import { PaginationDto } from '../../domain/dtos/shared';
 import { GetBoardsdDto } from '../../domain/dtos/board/get-boards.dto';
-import { CreateBoardDto, UpdateBoardDto } from '../../domain/dtos/board';
+import {
+	CreateBoardDto,
+	GetBoardDto,
+	UpdateBoardDto,
+} from '../../domain/dtos/board';
 
 import { CustomError } from '../../domain/errors';
 
@@ -12,20 +16,19 @@ export class BoardService {
 	constructor() {}
 
 	async getBoards(
-		user: UserEntity,
 		getBoardsdDto: GetBoardsdDto,
 		paginationDto: PaginationDto,
 	) {
-		const { isActive } = getBoardsdDto;
+		const { userId, isActive } = getBoardsdDto;
 		const { page, limit } = paginationDto;
 
 		try {
 			const [total, boards] = await Promise.all([
 				prisma.board.count({
-					where: { userId: user.id, isActive },
+					where: { userId, isActive },
 				}),
 				prisma.board.findMany({
-					where: { userId: user.id, isActive },
+					where: { userId, isActive },
 					skip: (page - 1) * limit,
 					take: limit,
 				}),
@@ -51,29 +54,29 @@ export class BoardService {
 		}
 	}
 
-	async findById(id: string, user: UserEntity) {
+	async findById(id: string, userId: string) {
 		const board = await prisma.board.findFirst({ where: { id } });
 
 		if (!board)
 			throw CustomError.notFound(`Board with id ${id} not found.`);
 
-		if (board.userId !== user.id) {
+		if (board.userId !== userId) {
 			throw CustomError.unauthorized(`You cannot access to this board.`);
 		}
 
 		return board;
 	}
 
-	async getBoardById(id: string, user: UserEntity) {
-		const board = await this.findById(id, user);
+	async getBoardById(getBoardDto: GetBoardDto) {
+		const board = await this.findById(getBoardDto.id, getBoardDto.userId);
 
 		return BoardEntity.fromObject(board);
 	}
 
-	async createBoard(createBoardDto: CreateBoardDto, user: UserEntity) {
+	async createBoard(createBoardDto: CreateBoardDto) {
 		try {
 			const board = await prisma.board.create({
-				data: { ...createBoardDto, userId: user.id },
+				data: { ...createBoardDto, userId: createBoardDto.userId },
 			});
 
 			return BoardEntity.fromObject(board);
@@ -82,8 +85,8 @@ export class BoardService {
 		}
 	}
 
-	async updateBoard(updateBoardDto: UpdateBoardDto, user: UserEntity) {
-		await this.findById(updateBoardDto.id, user);
+	async updateBoard(updateBoardDto: UpdateBoardDto) {
+		await this.findById(updateBoardDto.id, updateBoardDto.userId);
 
 		try {
 			const updatedBoard = await prisma.board.update({
@@ -97,11 +100,15 @@ export class BoardService {
 		}
 	}
 
-	async delateBoard(id: string, user: UserEntity) {
-		await this.findById(id, user);
+	async deleteBoard(getBoardDto: GetBoardDto) {
+		await this.findById(getBoardDto.id, getBoardDto.userId);
 
 		try {
-			const deletedBoard = await prisma.board.delete({ where: { id } });
+			const deletedBoard = await prisma.board.delete({
+				where: { id: getBoardDto.id },
+			});
+
+			console.log({ deletedBoard });
 
 			return BoardEntity.fromObject(deletedBoard);
 		} catch (error) {

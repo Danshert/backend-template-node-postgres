@@ -4,6 +4,7 @@ import { BoardService } from '../services/';
 
 import {
 	CreateBoardDto,
+	GetBoardDto,
 	GetBoardsdDto,
 	UpdateBoardDto,
 } from '../../domain/dtos/';
@@ -31,6 +32,7 @@ export class BoardController {
 		const [error, getBoardsDto] = GetBoardsdDto.create({
 			...request.query,
 			...request.body,
+			userId: request.body.user.id,
 		});
 
 		const [errorPagination, paginationDto] = PaginationDto.create({
@@ -42,7 +44,7 @@ export class BoardController {
 			return response.status(400).json({ error });
 
 		this.boardService
-			.getBoards(request.body.user, getBoardsDto!, paginationDto!)
+			.getBoards(getBoardsDto!, paginationDto!)
 			.then((boards) => response.status(201).json(boards))
 			.catch((error) => this.handleError(error, response));
 	};
@@ -50,14 +52,22 @@ export class BoardController {
 	getBoardById = (request: Request, response: Response) => {
 		const id = request.params.id;
 
+		const [error, getBoardDto] = GetBoardDto.create({
+			id,
+			userId: request.body.user.id,
+		});
+
+		if (error) return response.status(400).json({ error });
+
 		this.boardService
-			.getBoardById(id, request.body.user)
+			.getBoardById(getBoardDto!)
 			.then((board) => response.status(200).json(board))
 			.catch((error) => this.handleError(error, response));
 	};
 
 	createBoard = (request: Request, response: Response) => {
 		const [error, createBoardDto] = CreateBoardDto.create({
+			userId: request.body.user.id,
 			...request.query,
 			...request.body,
 		});
@@ -65,7 +75,7 @@ export class BoardController {
 		if (error) return response.status(400).json({ error });
 
 		this.boardService
-			.createBoard(createBoardDto!, request.body.user)
+			.createBoard(createBoardDto!)
 			.then((board) => response.status(201).json(board))
 			.catch((error) => this.handleError(error, response));
 	};
@@ -74,15 +84,16 @@ export class BoardController {
 		const id = request.params.id;
 
 		const [error, updateBoardDto] = UpdateBoardDto.create({
+			id,
+			userId: request.body.user.id,
 			...request.query,
 			...request.body,
-			id,
 		});
 
 		if (error) return response.status(400).json({ error });
 
 		this.boardService
-			.updateBoard(updateBoardDto!, request.body.user)
+			.updateBoard(updateBoardDto!)
 			.then((board) => response.status(200).json(board))
 			.catch((error) => this.handleError(error, response));
 	};
@@ -90,10 +101,15 @@ export class BoardController {
 	deleteBoard = (request: Request, response: Response) => {
 		const id = request.params.id;
 
-		if (!id) return response.status(400).json({ error: 'Missing id' });
+		const [error, getBoardDto] = GetBoardDto.create({
+			id,
+			userId: request.body.user.id,
+		});
+
+		if (error) return response.status(400).json({ error });
 
 		this.boardService
-			.delateBoard(id, request.body.user)
+			.deleteBoard(getBoardDto!)
 			.then((board) => response.status(200).json(board))
 			.catch((error) => this.handleError(error, response));
 	};
