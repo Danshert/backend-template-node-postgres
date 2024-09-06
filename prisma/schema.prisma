@@ -22,16 +22,17 @@ model User {
   id String @id @default(uuid())
   name String @db.VarChar(200)
   email String @unique
+  password String @db.VarChar(100)
   emailValidated Boolean @default(false)
-  password String
-  img String?
+  imageUrl String?
   role Role @default(USER)
   createdAt DateTime @db.Timestamp() @default(now())
   updatedAt DateTime @db.Timestamp() @default(now())
-  board board[]
+
+  board Board[]
 }
 
-model board {
+model Board {
   id String @id @default(uuid())
   name String @db.VarChar(200)
   isActive Boolean @default(true)
@@ -40,5 +41,4 @@ model board {
 
   userId String
   user User @relation(fields: [userId], references: [id])
-
 }
