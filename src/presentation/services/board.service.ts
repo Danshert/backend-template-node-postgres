@@ -75,9 +75,7 @@ export class BoardService {
 
 	async createBoard(createBoardDto: CreateBoardDto) {
 		try {
-			const board = await prisma.board.create({
-				data: { ...createBoardDto, userId: createBoardDto.userId },
-			});
+			const board = await prisma.board.create({ data: createBoardDto });
 
 			return BoardEntity.fromObject(board);
 		} catch (error) {
@@ -107,8 +105,6 @@ export class BoardService {
 			const deletedBoard = await prisma.board.delete({
 				where: { id: getBoardDto.id },
 			});
-
-			console.log({ deletedBoard });
 
 			return BoardEntity.fromObject(deletedBoard);
 		} catch (error) {
