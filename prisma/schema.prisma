@@ -30,6 +30,7 @@ model User {
   updatedAt DateTime @db.Timestamp() @default(now())
 
   board Board[]
+  Label Label[]
 }
 
 model Board {
@@ -41,4 +42,18 @@ model Board {
 
   userId String
   user User @relation(fields: [userId], references: [id])
+
+  Label Label[]
+}
+
+model Label {
+  id String @id @default(uuid())
+  name String @db.VarChar(50)
+  color String? @db.VarChar(20)
+
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  boardId String
+  board Board @relation(fields: [boardId], references: [id])
 }
