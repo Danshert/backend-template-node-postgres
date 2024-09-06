@@ -10,8 +10,10 @@ export class CreateBoardDto {
 	static create(object: { [key: string]: any }): [string?, CreateBoardDto?] {
 		const { name = false, userId } = object;
 
-		if (!name) return ['Missing name'];
-		if (!userId) return ['Missing user'];
+		if (!name) return ['Missing name.'];
+		if (name.length > 200) return ['Name is too long.'];
+
+		if (!userId) return ['Missing user ID.'];
 
 		return [undefined, new CreateBoardDto(name, userId.toString())];
 	}

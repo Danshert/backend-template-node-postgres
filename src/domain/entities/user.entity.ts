@@ -11,7 +11,7 @@ export class UserEntity {
 		public role: string[],
 		public createdAt: string,
 		public updatedAt: string,
-		public img?: string,
+		public imageUrl?: string,
 	) {}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,7 +25,7 @@ export class UserEntity {
 			role,
 			createdAt,
 			updatedAt,
-			img,
+			imageUrl,
 		} = object;
 
 		if (!id) throw CustomError.badRequest('Missing id');
@@ -48,7 +48,7 @@ export class UserEntity {
 			role,
 			createdAt,
 			updatedAt,
-			img,
+			imageUrl,
 		);
 	}
 }

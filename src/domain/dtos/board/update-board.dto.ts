@@ -12,9 +12,11 @@ export class UpdateBoardDto {
 	static create(props: { [key: string]: any }): [string?, UpdateBoardDto?] {
 		const { id, userId, name = false, isActive = true } = props;
 
-		if (!id) return ['Missing id'];
-		if (!userId) return ['Missing user id'];
-		if (!name) return ['Missing name'];
+		if (!id) return ['Missing ID.'];
+		if (!userId) return ['Missing user ID.'];
+
+		if (!name) return ['Missing name.'];
+		if (name.length > 200) return ['Name is too long.'];
 
 		let isActiveBoolean = isActive;
 
