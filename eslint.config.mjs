@@ -8,6 +8,7 @@ export default [
 	pluginJs.configs.recommended,
 	...tseslint.configs.recommended,
 	{
+		ignores: ['tests/**/*.test.ts'],
 		rules: {
 			'no-unused-vars': 'warn',
 			'no-undef': 'warn',

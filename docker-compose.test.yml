@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15.3
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: my-db
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - ./postgres-test:/var/lib/postgresql/data
+    ports:
+      - 5432:5432

@@ -36,3 +36,9 @@ Revisar y formatear el código
 ```
 npm run format
 ```
+
+Ejecutar pruebas
+
+```
+npm run test
+```

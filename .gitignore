@@ -1,7 +1,9 @@
 .env
+.env.test
 
-mongo/
 postgres/
+postgres-test/
+
 node_modules/
 dist/
 build/
