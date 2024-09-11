@@ -1,6 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { CustomError } from '../errors';
 
+export enum UserRole {
+	user = 'USER_ROLE',
+	admin = 'ADMIN_ROLE',
+}
 export class UserEntity {
 	constructor(
 		public id: string,
@@ -8,7 +12,7 @@ export class UserEntity {
 		public email: string,
 		public emailValidated: boolean,
 		public password: string,
-		public role: string[],
+		public role: UserRole[],
 		public createdAt: string,
 		public updatedAt: string,
 		public imageUrl?: string,
