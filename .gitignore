@@ -1,8 +1,8 @@
 .env
 .env.test
 
-postgres/
-postgres-test/
+/postgres
+/postgres-test
 
 node_modules/
 dist/
