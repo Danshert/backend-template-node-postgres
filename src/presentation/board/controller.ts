@@ -5,7 +5,7 @@ import { BoardService } from '../services/';
 import {
 	CreateBoardDto,
 	GetBoardDto,
-	GetBoardsdDto,
+	GetBoardsDto,
 	UpdateBoardDto,
 } from '../../domain/dtos/';
 
@@ -29,7 +29,7 @@ export class BoardController {
 	};
 
 	getBoards = async (request: Request, response: Response) => {
-		const [error, getBoardsDto] = GetBoardsdDto.create({
+		const [error, getBoardsDto] = GetBoardsDto.create({
 			...request.query,
 			...request.body,
 			userId: request.body.user.id,

@@ -3,7 +3,8 @@ import { BoardEntity } from '../../domain/entities';
 import { prisma } from '../../data/postgres';
 
 import { PaginationDto } from '../../domain/dtos/shared';
-import { GetBoardsdDto } from '../../domain/dtos/board/get-boards.dto';
+import { GetBoardsDto } from '../../domain/dtos/board/get-boards.dto';
+
 import {
 	CreateBoardDto,
 	GetBoardDto,
@@ -15,11 +16,8 @@ import { CustomError } from '../../domain/errors';
 export class BoardService {
 	constructor() {}
 
-	async getBoards(
-		getBoardsdDto: GetBoardsdDto,
-		paginationDto: PaginationDto,
-	) {
-		const { userId, isActive } = getBoardsdDto;
+	async getBoards(getBoardsDto: GetBoardsDto, paginationDto: PaginationDto) {
+		const { userId, isActive } = getBoardsDto;
 		const { page, limit } = paginationDto;
 
 		try {

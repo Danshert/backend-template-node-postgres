@@ -10,7 +10,7 @@ export class GetBoardDto {
 	static create(props: { [key: string]: any }): [string?, GetBoardDto?] {
 		const { id, userId, isActive = true } = props;
 
-		if (!id) return ['Missing user.'];
+		if (!id) return ['Missing ID.'];
 		if (!userId) return ['Missing user ID.'];
 
 		let isActiveBoolean = isActive;
