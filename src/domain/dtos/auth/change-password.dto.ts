@@ -12,9 +12,9 @@ export class ChangePasswordDto {
 	}): [string?, ChangePasswordDto?] {
 		const { token, password } = object;
 
-		if (!token) return ['Missing token'];
-		if (!password) return ['Missing password'];
-		if (password.length < 6) return ['Password too short'];
+		if (!token) return ['Missing token.'];
+		if (!password) return ['Missing password.'];
+		if (password.length < 6) return ['Password is too short.'];
 
 		return [undefined, new ChangePasswordDto(token, password)];
 	}
