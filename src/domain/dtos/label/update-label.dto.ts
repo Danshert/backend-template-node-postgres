@@ -11,9 +11,11 @@ export class UpdateLabelDto {
 	static create(object: { [key: string]: any }): [string?, UpdateLabelDto?] {
 		const { id, name, userId, color } = object;
 
-		if (!id) return ['Missing id'];
-		if (!name) return ['Missing name'];
-		if (!userId) return ['Missing user id'];
+		if (!id) return ['Missing ID.'];
+		if (!userId) return ['Missing user ID.'];
+
+		if (!name) return ['Missing name.'];
+		if (name.length > 50) return ['Name is too long.'];
 
 		return [
 			undefined,

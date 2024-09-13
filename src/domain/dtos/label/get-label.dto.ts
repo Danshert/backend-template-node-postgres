@@ -9,8 +9,8 @@ export class GetLabelDto {
 	static create(props: { [key: string]: any }): [string?, GetLabelDto?] {
 		const { id, userId } = props;
 
-		if (!id) return ['Missing id'];
-		if (!userId) return ['Missing user'];
+		if (!id) return ['Missing ID.'];
+		if (!userId) return ['Missing user ID.'];
 
 		return [undefined, new GetLabelDto(id.toString(), userId.toString())];
 	}

@@ -11,11 +11,11 @@ export class CreateLabelDto {
 	static create(object: { [key: string]: any }): [string?, CreateLabelDto?] {
 		const { name, userId, boardId, color } = object;
 
-		if (!name) return ['Missing name'];
+		if (!name) return ['Missing name.'];
 		if (name.length > 50) return ['Name is too long.'];
 
-		if (!userId) return ['Missing user id'];
-		if (!boardId) return ['Missing board id'];
+		if (!userId) return ['Missing user ID.'];
+		if (!boardId) return ['Missing board ID.'];
 
 		return [undefined, new CreateLabelDto(name, userId, boardId, color)];
 	}
