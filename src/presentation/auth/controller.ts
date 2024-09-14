@@ -4,7 +4,6 @@ import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 
 import {
-	ChangePasswordDto,
 	LoginUserDto,
 	RegisterUserDto,
 	UpdateUserDto,
@@ -50,24 +49,28 @@ export class AuthController {
 	};
 
 	updateUser = (request: Request, response: Response) => {
-		const [error, updateUserDto] = UpdateUserDto.create(request.body);
+		const [error, updateUserDto] = UpdateUserDto.create({
+			...request.body,
+			id: request.body.user.id,
+		});
 
 		if (error) return response.status(400).json({ error });
 
 		this.authService
-			.updateUser(updateUserDto!, request.body.user)
+			.updateUser(updateUserDto!)
 			.then((user) => response.json(user))
 			.catch((error) => this.handleError(error, response));
 	};
 
-	validateToken = (request: Request, response: Response) => {
-		const { token } = request.params;
+	renewToken = (request: Request, response: Response) => {
+		const token = request.body.token;
 
-		if (!token)
+		if (!token) {
 			return response.status(400).json({ error: 'Token required' });
+		}
 
 		this.authService
-			.validateToken(token)
+			.renewToken(token)
 			.then((resp) => response.json(resp))
 			.catch((error) => this.handleError(error, response));
 	};
@@ -92,10 +95,11 @@ export class AuthController {
 	};
 
 	requestPasswordChange = (request: Request, response: Response) => {
-		const { email } = request.params;
+		const email = request.query.email || request.body.email;
 
-		if (!email)
+		if (!email) {
 			return response.status(400).json({ error: 'Email required' });
+		}
 
 		this.authService
 			.requestPasswordChange(email)
@@ -120,19 +124,5 @@ export class AuthController {
 					path.join(__dirname, `../html/expiredToken.html`),
 				),
 			);
-	};
-
-	changePassword = (request: Request, response: Response) => {
-		const [error, changePasswordDto] = ChangePasswordDto.create(
-			request.body,
-		);
-
-		if (error)
-			return response.status(400).json({ ok: false, message: error });
-
-		this.authService
-			.changePassword(changePasswordDto!)
-			.then((resp) => response.json(resp))
-			.catch((error) => this.handleError(error, response));
 	};
 }

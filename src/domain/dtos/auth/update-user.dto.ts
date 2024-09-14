@@ -4,8 +4,8 @@ export class UpdateUserDto {
 	constructor(
 		public id: string,
 		public name: string,
-		public password: string,
-		public updatedAt: Date,
+		public password?: string,
+		public updatedAt?: Date,
 	) {}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

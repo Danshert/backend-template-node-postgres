@@ -4,7 +4,6 @@ import { prisma } from '../../data/postgres';
 import { EmailService } from './email.service';
 
 import {
-	ChangePasswordDto,
 	LoginUserDto,
 	RegisterUserDto,
 	UpdateUserDto,
@@ -13,7 +12,7 @@ import {
 import { UserEntity } from '../../domain/entities';
 import { CustomError } from '../../domain/errors';
 
-import { JwtAdapter, bcryptAdapter, envs } from '../../config';
+import { JwtAdapter, bcryptAdapter, envs, regularExps } from '../../config';
 
 export class AuthService {
 	constructor(private readonly emailService: EmailService) {}
@@ -28,14 +27,23 @@ export class AuthService {
 		try {
 			await this.sendEmailValidationLink(registerUserDto.email);
 
-			await prisma.user.create({
+			const user = await prisma.user.create({
 				data: {
 					...registerUserDto,
 					password: bcryptAdapter.hash(registerUserDto.password),
 				},
 			});
 
-			return { ok: true, message: 'Account created.' };
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { password, ...userEntity } = UserEntity.fromObject(user);
+
+			const token = await JwtAdapter.generateToken({ id: user.id });
+
+			if (!token) {
+				throw CustomError.internalServer('Error while creating JWT');
+			}
+
+			return { user: userEntity, token };
 		} catch (error) {
 			throw CustomError.internalServer(`${error}`);
 		}
@@ -70,11 +78,7 @@ export class AuthService {
 		}
 	}
 
-	public async updateUser(updateUserDto: UpdateUserDto, user: UserEntity) {
-		if (updateUserDto.id !== user.id) {
-			throw CustomError.unauthorized(`You cannot modify this user.`);
-		}
-
+	public async updateUser(updateUserDto: UpdateUserDto) {
 		if (updateUserDto.password) {
 			updateUserDto.password = bcryptAdapter.hash(updateUserDto.password);
 		}
@@ -105,7 +109,7 @@ export class AuthService {
 		}
 	}
 
-	public validateToken = async (token: string) => {
+	public renewToken = async (token: string) => {
 		const payload = await JwtAdapter.validateToken(token);
 		if (!payload) throw CustomError.unauthorized('Invalid token');
 
@@ -186,6 +190,10 @@ export class AuthService {
 	};
 
 	public requestPasswordChange = async (email: string) => {
+		if (!regularExps.email.test(email)) {
+			throw CustomError.badRequest(`Email is not valid.`);
+		}
+
 		const user = await prisma.user.findFirst({ where: { email } });
 
 		if (!user) throw CustomError.internalServer('Email not exists');
@@ -238,23 +246,5 @@ export class AuthService {
 		}
 
 		return true;
-	};
-
-	public changePassword = async (changePasswordDto: ChangePasswordDto) => {
-		const payload = await JwtAdapter.validateToken(changePasswordDto.token);
-		if (!payload) throw CustomError.unauthorized('Invalid token');
-
-		const { email } = payload as { email: string };
-
-		const user = await prisma.user.update({
-			where: { email },
-			data: { password: bcryptAdapter.hash(changePasswordDto.password) },
-		});
-
-		if (!user) {
-			throw CustomError.internalServer('Error while getting user');
-		}
-
-		return { ok: true, message: 'Password changed' };
 	};
 }

@@ -14,8 +14,8 @@ datasource db {
 }
 
 enum Role {
-  USER
-  ADMIN
+  USER_ROLE
+  ADMIN_ROLE
 }
 
 model User {
@@ -25,7 +25,7 @@ model User {
   password String @db.VarChar(100)
   emailValidated Boolean @default(false)
   imageUrl String?
-  role Role @default(USER)
+  role Role[] @default([USER_ROLE])
   createdAt DateTime @db.Timestamp() @default(now())
   updatedAt DateTime @db.Timestamp() @default(now())
 

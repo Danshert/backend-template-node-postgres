@@ -49,6 +49,7 @@ export class AuthMiddleware {
 			}
 
 			request.body.user = UserEntity.fromObject(user);
+			request.body.token = token;
 
 			next();
 		} catch (error) {

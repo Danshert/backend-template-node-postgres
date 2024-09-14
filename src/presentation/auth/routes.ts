@@ -30,13 +30,16 @@ export class AuthRoutes {
 			controller.updateUser,
 		);
 
-		router.post('/change-password', controller.changePassword);
+		router.get(
+			'/renew-token',
+			[AuthMiddleware.validateJWT],
+			controller.renewToken,
+		);
 
-		router.get('/validate-token/:token', controller.validateToken);
 		router.get('/validate-email/:token', controller.validateEmail);
 
 		router.get(
-			'/request-password-change/:email',
+			'/request-password-change',
 			controller.requestPasswordChange,
 		);
 
