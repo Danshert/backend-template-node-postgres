@@ -1,15 +1,17 @@
 import request from 'supertest';
-import { prisma } from '../../src/data/postgres';
+import { prisma } from '../../../src/data/postgres';
 
-import { testServer } from '../test-server';
-import { UserRole } from '../../src/domain/entities';
+import { testServer } from '../../test-server';
+import { UserRole } from '../../../src/domain/entities';
 
 describe('Tests in auth routes', () => {
 	beforeAll(async () => {
 		await testServer.start();
 	});
 
-	afterAll(() => {
+	afterAll(async () => {
+		await prisma.user.deleteMany();
+
 		testServer.close();
 	});
 
@@ -24,8 +26,6 @@ describe('Tests in auth routes', () => {
 			.post('/api/auth/register')
 			.send(userData)
 			.expect(200);
-
-		await prisma.user.delete({ where: { email: userData.email } });
 
 		expect(body).toEqual({
 			user: {
@@ -57,7 +57,7 @@ describe('Tests in auth routes', () => {
 			.expect(200);
 
 		await prisma.user.update({
-			where: { email: user.email },
+			where: { id: user.id },
 			data: { emailValidated: true },
 		});
 
@@ -78,8 +78,6 @@ describe('Tests in auth routes', () => {
 			},
 			token: expect.any(String),
 		});
-
-		await prisma.user.delete({ where: { email: user.email } });
 	});
 
 	test('should update user - /api/auth/update', async () => {
@@ -97,7 +95,7 @@ describe('Tests in auth routes', () => {
 			.expect(200);
 
 		await prisma.user.update({
-			where: { email: user.email },
+			where: { id: user.id },
 			data: { emailValidated: true },
 		});
 
@@ -123,8 +121,6 @@ describe('Tests in auth routes', () => {
 			},
 			token: expect.any(String),
 		});
-
-		await prisma.user.delete({ where: { email: user.email } });
 	});
 
 	test('should renew token - /api/auth/renew-token', async () => {
@@ -142,7 +138,7 @@ describe('Tests in auth routes', () => {
 			.expect(200);
 
 		await prisma.user.update({
-			where: { email: user.email },
+			where: { id: user.id },
 			data: { emailValidated: true },
 		});
 
@@ -163,8 +159,6 @@ describe('Tests in auth routes', () => {
 			},
 			token: expect.any(String),
 		});
-
-		await prisma.user.delete({ where: { email: user.email } });
 	});
 
 	test('should request password change - /api/auth/request-password-change', async () => {
@@ -182,7 +176,7 @@ describe('Tests in auth routes', () => {
 			.expect(200);
 
 		await prisma.user.update({
-			where: { email: user.email },
+			where: { id: user.id },
 			data: { emailValidated: true },
 		});
 
@@ -190,8 +184,6 @@ describe('Tests in auth routes', () => {
 			.get('/api/auth/request-password-change')
 			.send({ email: user.email })
 			.expect(200);
-
-		await prisma.user.delete({ where: { email: user.email } });
 	});
 
 	test('should return new password page - /api/auth/new-password', async () => {
@@ -209,14 +201,12 @@ describe('Tests in auth routes', () => {
 			.expect(200);
 
 		await prisma.user.update({
-			where: { email: user.email },
+			where: { id: user.id },
 			data: { emailValidated: true },
 		});
 
 		await request(testServer.app)
 			.get(`/api/auth/new-password/${token}`)
 			.expect(200);
-
-		await prisma.user.delete({ where: { email: user.email } });
 	});
 });

@@ -38,7 +38,7 @@ export class LabelController {
 
 		this.labelService
 			.getLabels(getLabelsDto!)
-			.then((labels) => response.status(201).json(labels))
+			.then((labels) => response.status(200).json(labels))
 			.catch((error) => this.handleError(error, response));
 	};
 
