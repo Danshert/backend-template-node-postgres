@@ -41,7 +41,7 @@ model Board {
   updatedAt DateTime @db.Timestamp() @default(now())
 
   userId String
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   Label Label[]
 }
@@ -55,5 +55,5 @@ model Label {
   user User @relation(fields: [userId], references: [id])
 
   boardId String
-  board Board @relation(fields: [boardId], references: [id])
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
 }
