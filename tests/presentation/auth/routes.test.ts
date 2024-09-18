@@ -1,4 +1,6 @@
 import request from 'supertest';
+import { v4 as uuidv4 } from 'uuid';
+
 import { prisma } from '../../../src/data/postgres';
 
 import { testServer } from '../../test-server';
@@ -18,7 +20,7 @@ describe('Tests in auth routes', () => {
 	test('should register user - /api/auth/register', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
@@ -45,7 +47,7 @@ describe('Tests in auth routes', () => {
 	test('should login user - /api/auth/login', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
@@ -83,7 +85,7 @@ describe('Tests in auth routes', () => {
 	test('should update user - /api/auth/update', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
@@ -126,7 +128,7 @@ describe('Tests in auth routes', () => {
 	test('should renew token - /api/auth/renew-token', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
@@ -164,7 +166,7 @@ describe('Tests in auth routes', () => {
 	test('should request password change - /api/auth/request-password-change', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
@@ -189,7 +191,7 @@ describe('Tests in auth routes', () => {
 	test('should return new password page - /api/auth/new-password', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 

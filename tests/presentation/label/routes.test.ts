@@ -1,5 +1,7 @@
 import request from 'supertest';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import { prisma } from '../../../src/data/postgres';
 
 import { testServer } from '../../test-server';
@@ -20,7 +22,7 @@ describe('Tests in label routes', () => {
 	test('should get labels - /api/labels', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
@@ -55,7 +57,7 @@ describe('Tests in label routes', () => {
 	test('should create label - /api/labels', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
@@ -97,7 +99,7 @@ describe('Tests in label routes', () => {
 	test('should update label - /api/labels', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
@@ -147,7 +149,7 @@ describe('Tests in label routes', () => {
 	test('should delete label - /api/labels', async () => {
 		const userData = {
 			name: 'Test',
-			email: `${Date.now()}@test.com`,
+			email: `${uuidv4()}@test.com`,
 			password: '123456',
 		};
 
