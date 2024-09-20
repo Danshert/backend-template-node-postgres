@@ -31,6 +31,7 @@ model User {
 
   board Board[]
   Label Label[]
+  Task Task[]
 }
 
 model Board {
@@ -44,6 +45,7 @@ model Board {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   Label Label[]
+  Task Task[]
 }
 
 model Label {
@@ -56,4 +58,46 @@ model Label {
 
   boardId String
   board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  LabelsOnTask LabelsOnTask[]
+}
+
+enum TaskStatus {
+  TODO
+  DOING
+  DONE
+}
+
+model Task {
+  id String @id @default(uuid())
+  title String @db.VarChar(200)
+  description String?
+  imageUrl String?
+  status TaskStatus @default(TODO)
+  startDate DateTime? @db.Timestamp()
+  endDate DateTime? @db.Timestamp()
+  reminder Boolean @default(false)
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @default(now())
+  isActive Boolean @default(true)
+
+  color String? @db.VarChar(20)
+
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  boardId String
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  labels LabelsOnTask[]
+}
+
+model LabelsOnTask {
+  label Label @relation(fields: [labelId], references: [id])
+  labelId String
+
+  task Task @relation(fields: [taskId], references: [id])
+  taskId String
+
+  @@id([labelId, taskId])
 }
