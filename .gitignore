@@ -4,6 +4,9 @@
 /postgres
 /postgres-test
 
+/uploads/users
+/uploads/tasks
+
 node_modules/
 dist/
 build/
