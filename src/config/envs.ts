@@ -3,6 +3,7 @@ import { get } from 'env-var';
 
 export const envs = {
 	PORT: get('PORT').required().asPortNumber(),
+	SERVER_URL: get('SERVER_URL').required().asString(),
 
 	POSTGRES_URL: get('POSTGRES_URL').required().asString(),
 	POSTGRES_DB: get('POSTGRES_DB').required().asString(),

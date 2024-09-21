@@ -22,15 +22,7 @@ export class FileUploadController {
 
 	uploadFile = (request: Request, response: Response) => {
 		const type = request.params.type;
-		const validTypes = ['users', 'tasks'];
-
-		if (!validTypes.includes(type)) {
-			return response.status(400).json({
-				error: `Invalid type: ${type}, valid ones ${validTypes}`,
-			});
-		}
-
-		const file = request.body.files[0] as UploadedFile;
+		const file = request.body.files.at(0) as UploadedFile;
 
 		this.fileUploadService
 			.uploadSingle(file, `uploads/${type}`)
