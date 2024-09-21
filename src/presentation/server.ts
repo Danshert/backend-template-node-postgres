@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import path from 'path';
 import cors from 'cors';
 import compression from 'compression';
+import fileUpload from 'express-fileupload';
 
 interface Options {
 	port: number;
@@ -32,6 +33,12 @@ export class Server {
 		this.app.use(express.json()); // raw
 		this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
 		this.app.use(compression());
+
+		this.app.use(
+			fileUpload({
+				limits: { fileSize: 50 * 1024 * 1024 },
+			}),
+		);
 
 		//* Public Folder
 		this.app.use(express.static(this.publicPath));
