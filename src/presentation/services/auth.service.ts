@@ -1,4 +1,7 @@
 /* eslint-disable no-unused-vars */
+import path from 'path';
+import fs from 'fs';
+
 import { prisma } from '../../data/postgres';
 
 import { EmailService } from './email.service';
@@ -79,21 +82,43 @@ export class AuthService {
 	}
 
 	public async updateUser(updateUserDto: UpdateUserDto) {
+		const { imageFile, ...updatedData } = updateUserDto;
+
 		if (updateUserDto.password) {
 			updateUserDto.password = bcryptAdapter.hash(updateUserDto.password);
+		}
+
+		let fileUrl;
+
+		if (imageFile) {
+			const fileExtension = imageFile.mimetype.split('/').at(1) ?? '';
+
+			const destination = path.resolve(
+				// eslint-disable-next-line no-undef
+				__dirname,
+				'../../../',
+				'uploads/users',
+			);
+
+			if (!fs.existsSync(destination)) {
+				fs.mkdirSync(destination);
+			}
+
+			const fileName = `${updatedData.id}.${fileExtension}`;
+			fileUrl = `${envs.SERVER_URL}/api/images/users/${fileName}`;
+
+			imageFile.mv(`${destination}/${fileName}`);
 		}
 
 		try {
 			const user = await prisma.user.update({
 				where: { id: updateUserDto.id },
-				data: updateUserDto,
+				data: { ...updatedData, imageUrl: fileUrl },
 			});
 
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, emailValidated, ...updatedUser } = {
-				...UserEntity.fromObject(user),
-				...updateUserDto,
-			};
+			const { password, emailValidated, ...updatedUser } =
+				UserEntity.fromObject(user);
 
 			const token = await JwtAdapter.generateToken({
 				id: updatedUser.id,

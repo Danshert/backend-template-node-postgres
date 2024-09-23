@@ -52,6 +52,7 @@ export class AuthController {
 		const [error, updateUserDto] = UpdateUserDto.create({
 			...request.body,
 			id: request.body.user.id,
+			image: request.files && request.files.image,
 		});
 
 		if (error) return response.status(400).json({ error });
