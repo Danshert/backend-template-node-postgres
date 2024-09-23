@@ -4,6 +4,7 @@ describe('Tests in envs', () => {
 	test('should return env options', () => {
 		expect(envs).toEqual({
 			PORT: 3001,
+			SERVER_URL: expect.any(String),
 			POSTGRES_URL: expect.any(String),
 			POSTGRES_DB: 'TODO_DB_TEST',
 			JWT_SEED: expect.any(String),
