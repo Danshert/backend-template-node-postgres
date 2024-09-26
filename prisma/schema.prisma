@@ -91,6 +91,7 @@ model Task {
   startDate DateTime? @db.Timestamp()
   endDate DateTime? @db.Timestamp()
   reminderTime ReminderTime @default(NONE)
+  notificationCreated Boolean @default(false)
   createdAt DateTime @db.Timestamp() @default(now())
   updatedAt DateTime @db.Timestamp() @default(now())
   isActive Boolean @default(true)
