@@ -146,7 +146,7 @@ export class TaskService {
 		const labelsToAdd: string[] = [];
 		const labelsToRemove: string[] = [];
 
-		const { labels, ...data } = updateTaskDto;
+		const { labels = [], ...data } = updateTaskDto;
 
 		labelsTask.forEach((labelId) => {
 			if (!labels.includes(labelId)) {

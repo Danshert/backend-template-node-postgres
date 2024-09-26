@@ -11,7 +11,7 @@ export class UpdateTaskDto {
 		public readonly labels?: string[],
 		public readonly startDate?: Date,
 		public readonly endDate?: Date,
-		public readonly reminderTime?: string,
+		public readonly reminderTime?: ReminderTime,
 		public readonly updatedAt?: Date,
 	) {}
 
@@ -69,15 +69,17 @@ export class UpdateTaskDto {
 
 		const reminderTimes = [
 			ReminderTime.NONE,
-			ReminderTime.FIVE_MINS,
-			ReminderTime.TEN_MINS,
-			ReminderTime.FIFTEEN_MINS,
-			ReminderTime.THIRTY_MINS,
-			ReminderTime.ONE_HOUR,
-			ReminderTime.TWO_HOURS,
-			ReminderTime.ONE_DAY,
-			ReminderTime.TWO_DAYS,
+			ReminderTime.MINS_5,
+			ReminderTime.MINS_10,
+			ReminderTime.MINS_15,
+			ReminderTime.MINS_30,
+			ReminderTime.HOUR_1,
+			ReminderTime.HOURS_2,
+			ReminderTime.DAY_1,
+			ReminderTime.DAYS_2,
 		];
+
+		console.log('reminderTime', reminderTime);
 
 		if (reminderTime && !reminderTimes.includes(reminderTime)) {
 			return [

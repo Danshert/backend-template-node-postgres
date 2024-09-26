@@ -70,16 +70,17 @@ enum TaskStatus {
   DONE
 }
 
-enum ReminderTime {
+enum ReminderTime  {
   NONE
-  FIVE_MINS
-  TEN_MINS
-  FIFTEEN_MINS
-  THIRTY_MINS
-  ONE_HOUR
-  TWO_HOURS
-  ONE_DAY
-  TWO_DAYS
+  DUE_DATE
+  MINS_5
+  MINS_10
+  MINS_15
+  MINS_30
+  HOUR_1
+  HOURS_2
+  DAY_1
+  DAYS_2
 }
 
 model Task {
@@ -105,7 +106,7 @@ model Task {
   board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   labels LabelsOnTask[]
-  Notigication Notification[]
+  Notification Notification[]
 }
 
 model LabelsOnTask {
