@@ -1,34 +1,43 @@
-import { TaskStatus } from '@prisma/client';
+import { ReminderTime, TaskStatus } from '@prisma/client';
 
 /* eslint-disable no-unused-vars */
 export class UpdateTaskDto {
 	private constructor(
 		public readonly id: string,
-		public readonly title: string,
 		public readonly userId: string,
-		public readonly description: string,
-		public readonly status: TaskStatus,
-		public readonly labels: string[],
-		public readonly updatedAt: Date,
+		public readonly title?: string,
+		public readonly description?: string,
+		public readonly status?: TaskStatus,
+		public readonly labels?: string[],
+		public readonly startDate?: Date,
+		public readonly endDate?: Date,
+		public readonly reminderTime?: string,
+		public readonly updatedAt?: Date,
 	) {}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static create(object: { [key: string]: any }): [string?, UpdateTaskDto?] {
 		const {
 			id,
-			title,
 			userId,
+			title,
 			description = '',
 			status = TaskStatus.TODO,
 			labels = [],
+			startDate,
+			endDate,
+			reminderTime,
 		} = object;
 
 		if (!id) return ['Missing ID.'];
 
-		if (!title) return ['Missing title.'];
 		if (title.length > 200) return ['Title is too long.'];
 
 		if (!userId) return ['Missing user ID.'];
+
+		if (!isNaN(startDate) || !isNaN(endDate)) {
+			return ["It's not a valid datetime."];
+		}
 
 		if (typeof labels !== 'object') {
 			return ['Labels must be an array of label IDs.'];
@@ -50,13 +59,29 @@ export class UpdateTaskDto {
 			});
 		}
 
-		if (
-			![TaskStatus.TODO, TaskStatus.DONE, TaskStatus.DONE].includes(
-				status,
-			)
-		) {
+		const taskStatus = [TaskStatus.TODO, TaskStatus.DONE, TaskStatus.DONE];
+
+		if (!taskStatus.includes(status)) {
 			return [
-				`It's not a valid status. Valid ones: ${TaskStatus.TODO}, ${TaskStatus.DOING}, ${TaskStatus.DONE}`,
+				`It's not a valid status. Valid ones: ${taskStatus.toString()}`,
+			];
+		}
+
+		const reminderTimes = [
+			ReminderTime.NONE,
+			ReminderTime.FIVE_MINS,
+			ReminderTime.TEN_MINS,
+			ReminderTime.FIFTEEN_MINS,
+			ReminderTime.THIRTY_MINS,
+			ReminderTime.ONE_HOUR,
+			ReminderTime.TWO_HOURS,
+			ReminderTime.ONE_DAY,
+			ReminderTime.TWO_DAYS,
+		];
+
+		if (reminderTime && !reminderTimes.includes(reminderTime)) {
+			return [
+				`It's not a valid reminder time. Valid times: ${reminderTimes.toString()}`,
 			];
 		}
 
@@ -64,11 +89,14 @@ export class UpdateTaskDto {
 			undefined,
 			new UpdateTaskDto(
 				id,
-				title,
 				userId,
+				title,
 				description,
 				status,
 				labelsIds,
+				startDate,
+				endDate,
+				reminderTime,
 				new Date(),
 			),
 		];

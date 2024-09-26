@@ -9,7 +9,7 @@ export class TaskEntity {
 		public status: string,
 		public startDate: string,
 		public endDate: string,
-		public reminder: boolean,
+		public reminderTime: string,
 		public labels: { userId: string; boardId: string }[],
 		public createdAt: string,
 		public updatedAt: string,

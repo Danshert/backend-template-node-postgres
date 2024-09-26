@@ -68,6 +68,18 @@ enum TaskStatus {
   DONE
 }
 
+enum ReminderTime {
+  NONE
+  FIVE_MINS
+  TEN_MINS
+  FIFTEEN_MINS
+  THIRTY_MINS
+  ONE_HOUR
+  TWO_HOURS
+  ONE_DAY
+  TWO_DAYS
+}
+
 model Task {
   id String @id @default(uuid())
   title String @db.VarChar(200)
@@ -76,7 +88,7 @@ model Task {
   status TaskStatus @default(TODO)
   startDate DateTime? @db.Timestamp()
   endDate DateTime? @db.Timestamp()
-  reminder Boolean @default(false)
+  reminderTime ReminderTime @default(NONE)
   createdAt DateTime @db.Timestamp() @default(now())
   updatedAt DateTime @db.Timestamp() @default(now())
   isActive Boolean @default(true)
