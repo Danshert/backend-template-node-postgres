@@ -4,6 +4,9 @@ import cors from 'cors';
 import compression from 'compression';
 import fileUpload from 'express-fileupload';
 
+import { CronService } from './cron/cron-service';
+import { NotificationService } from './services';
+
 interface Options {
 	port: number;
 	routes: Router;
@@ -57,6 +60,11 @@ export class Server {
 
 		this.serverListener = this.app.listen(this.port, () => {
 			console.log(`Server running on port ${this.port}`);
+		});
+
+		// Each 2 minutes
+		CronService.createJob('0 */2 * * * *', () => {
+			new NotificationService().checkDueDatesOfTasks();
 		});
 	}
 
