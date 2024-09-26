@@ -32,6 +32,7 @@ model User {
   board Board[]
   Label Label[]
   Task Task[]
+  Notification Notification[]
 }
 
 model Board {
@@ -46,6 +47,7 @@ model Board {
 
   Label Label[]
   Task Task[]
+  Notification Notification[]
 }
 
 model Label {
@@ -102,6 +104,7 @@ model Task {
   board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   labels LabelsOnTask[]
+  Notigication Notification[]
 }
 
 model LabelsOnTask {
@@ -112,4 +115,21 @@ model LabelsOnTask {
   taskId String
 
   @@id([labelId, taskId])
+}
+
+model Notification {
+  id String @id @default(uuid())
+  message String @db.VarChar(500)
+  seen Boolean @default(false)
+  createdAt DateTime @db.Timestamp() @default(now())
+
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  boardId String
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  taskId String
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
 }
