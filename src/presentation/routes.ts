@@ -6,6 +6,7 @@ import { LabelRoutes } from './label/routes';
 import { TaskRoutes } from './task/routes';
 import { FileUploadRoutes } from './file-uploads/routes';
 import { ImageRoutes } from './images/routes';
+import { NotificationRoutes } from './notification/routes';
 
 export class AppRoutes {
 	static get routes(): Router {
@@ -17,6 +18,7 @@ export class AppRoutes {
 		router.use('/api/tasks', TaskRoutes.routes);
 		router.use('/api/upload', FileUploadRoutes.routes);
 		router.use('/api/images', ImageRoutes.routes);
+		router.use('/api/notifications', NotificationRoutes.routes);
 
 		return router;
 	}
