@@ -3,6 +3,8 @@ import { CustomError } from '../../domain';
 import { prisma } from '../../data/postgres';
 import { ReminderTime, Task } from '@prisma/client';
 
+import { WssService } from './wss.service';
+
 import { NotificationEntity } from '../../domain/entities';
 
 import { GetNotificationsDto, PaginationDto } from '../../domain/dtos';
@@ -20,7 +22,8 @@ import {
 } from 'date-fns';
 
 export class NotificationService {
-	constructor() {}
+	// eslint-disable-next-line no-unused-vars
+	constructor(private readonly wssService = WssService.instance) {}
 
 	async findById(id: string, userId: string) {
 		const notification = await prisma.notification.findFirst({
@@ -106,13 +109,18 @@ export class NotificationService {
 				data: { notificationCreated: true },
 			});
 
-			await prisma.notification.create({
+			const notification = await prisma.notification.create({
 				data: {
 					userId: task.userId,
 					boardId: task.boardId,
 					taskId: task.id,
 					message,
 				},
+			});
+
+			this.wssService.sendMessage('new-notification', {
+				userId: task.userId.toString(),
+				...NotificationEntity.fromObject(notification),
 			});
 		} catch (error) {
 			throw CustomError.internalServer(`${error}`);
@@ -147,8 +155,6 @@ export class NotificationService {
 						task.endDate!,
 						Date.now(),
 					);
-
-					console.log('diffInMins', diffInMins, 'mins', mins);
 
 					if (diffInMins <= mins) {
 						message = `La tarea ${task.title}, finaliza en ${diffInMins} minutos`;
