@@ -3,6 +3,7 @@ import { CustomError } from '../../domain';
 import { prisma } from '../../data/postgres';
 import { ReminderTime, Task } from '@prisma/client';
 
+import { webpush } from '../../config';
 import { WssService } from './wss.service';
 
 import { NotificationEntity } from '../../domain/entities';
@@ -20,10 +21,68 @@ import {
 	startOfToday,
 	subDays,
 } from 'date-fns';
+interface PushSubscription {
+	endpoint: string;
+	expirationTime: null;
+	keys: {
+		auth: string;
+		p256dh: string;
+	};
+}
 
 export class NotificationService {
 	// eslint-disable-next-line no-unused-vars
 	constructor(private readonly wssService = WssService.instance) {}
+
+	subscription = async (userId: string, subscription: PushSubscription) => {
+		const userData = await prisma.user.findFirst({
+			where: { id: userId },
+		});
+
+		const subscriptions =
+			userData?.pushSubscriptions.map((s) => JSON.parse(s)) || [];
+
+		if (
+			!subscriptions.find((s) => s.keys.auth === subscription.keys.auth)
+		) {
+			if (userData) {
+				try {
+					await prisma.user.update({
+						where: { id: userId },
+						data: {
+							pushSubscriptions: [
+								...userData.pushSubscriptions,
+								JSON.stringify(subscription),
+							],
+						},
+					});
+
+					return { ok: true, message: 'Subscribed!' };
+				} catch (error) {
+					throw CustomError.internalServer(`${error}`);
+				}
+			}
+		} else {
+			return { ok: true, message: 'Client already subscribed' };
+		}
+	};
+
+	async checkSubscription(userId: string, subscription: PushSubscription) {
+		const userData = await prisma.user.findFirst({
+			where: { id: userId },
+		});
+
+		const subscriptions =
+			userData?.pushSubscriptions.map((s) => JSON.parse(s)) || [];
+
+		if (
+			!subscriptions.find((s) => s.keys.auth === subscription.keys.auth)
+		) {
+			return { ok: true, message: 'Not subscribed' };
+		} else {
+			return { ok: true, message: 'Client already subscribed' };
+		}
+	}
 
 	async findById(id: string, userId: string) {
 		const notification = await prisma.notification.findFirst({
@@ -122,6 +181,27 @@ export class NotificationService {
 				userId: task.userId.toString(),
 				...NotificationEntity.fromObject(notification),
 			});
+
+			const userData = await prisma.user.findFirst({
+				where: { id: task.userId },
+			});
+
+			const subscriptions =
+				userData?.pushSubscriptions.map((s) => JSON.parse(s)) || [];
+
+			await Promise.all(
+				subscriptions.map((subscription) => {
+					webpush
+						.sendNotification(
+							subscription,
+							JSON.stringify({
+								title: 'Nueva notificación',
+								message: notification.message,
+							}),
+						)
+						.catch(() => {});
+				}),
+			);
 		} catch (error) {
 			throw CustomError.internalServer(`${error}`);
 		}

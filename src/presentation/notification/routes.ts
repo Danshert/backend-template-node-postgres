@@ -12,17 +12,13 @@ export class NotificationRoutes {
 		const notificationService = new NotificationService();
 		const controller = new NotificationController(notificationService);
 
-		router.get(
-			'/',
-			[AuthMiddleware.validateJWT],
-			controller.getNotifications,
-		);
+		router.use([AuthMiddleware.validateJWT]);
 
-		router.put(
-			'/:id',
-			[AuthMiddleware.validateJWT],
-			controller.markNotificationAsSeen,
-		);
+		router.get('/', controller.getNotifications);
+		router.put('/:id', controller.markNotificationAsSeen);
+
+		router.post('/subscription', controller.subscription);
+		router.get('/check-subscription', controller.checkSubscription);
 
 		return router;
 	}

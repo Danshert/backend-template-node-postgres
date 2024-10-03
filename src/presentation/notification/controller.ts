@@ -53,4 +53,22 @@ export class NotificationController {
 			.then((notifications) => response.status(200).json(notifications))
 			.catch((error) => this.handleError(error, response));
 	};
+
+	subscription = async (request: Request, response: Response) => {
+		const userId = request.body.user.id;
+
+		this.notificationService
+			.subscription(userId, request.body)
+			.then((res) => response.status(200).json(res))
+			.catch((error) => this.handleError(error, response));
+	};
+
+	checkSubscription = async (request: Request, response: Response) => {
+		const userId = request.body.user.id;
+
+		this.notificationService
+			.checkSubscription(userId, request.body)
+			.then((res) => response.status(200).json(res))
+			.catch((error) => this.handleError(error, response));
+	};
 }
