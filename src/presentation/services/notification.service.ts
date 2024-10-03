@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { CustomError } from '../../domain';
 
 import { prisma } from '../../data/postgres';
@@ -32,7 +33,6 @@ interface PushSubscription {
 }
 
 export class NotificationService {
-	// eslint-disable-next-line no-unused-vars
 	constructor(
 		private readonly emailService: EmailService,
 		private readonly wssService = WssService.instance,
