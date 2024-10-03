@@ -2,14 +2,23 @@ import { Router } from 'express';
 
 import { AuthMiddleware } from '../middlewares';
 
-import { NotificationService } from '../services';
+import { EmailService, NotificationService } from '../services';
 import { NotificationController } from './controller';
+
+import { envs } from '../../config';
 
 export class NotificationRoutes {
 	static get routes(): Router {
 		const router = Router();
 
-		const notificationService = new NotificationService();
+		const emailService = new EmailService(
+			envs.MAILER_SERVICE,
+			envs.MAILER_EMAIL,
+			envs.MAILER_SECRET_KEY,
+			envs.SEND_EMAIL,
+		);
+
+		const notificationService = new NotificationService(emailService);
 		const controller = new NotificationController(notificationService);
 
 		router.use([AuthMiddleware.validateJWT]);

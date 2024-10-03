@@ -5,8 +5,10 @@ import cors from 'cors';
 import compression from 'compression';
 import fileUpload from 'express-fileupload';
 
+import { envs } from '../config';
+
 import { CronService } from './cron/cron-service';
-import { NotificationService } from './services';
+import { EmailService, NotificationService } from './services';
 
 interface Options {
 	port: number;
@@ -56,7 +58,14 @@ export class Server {
 
 		// Each 2 minutes
 		CronService.createJob('0 */2 * * * *', () => {
-			new NotificationService().checkDueDatesOfTasks();
+			new NotificationService(
+				new EmailService(
+					envs.MAILER_SERVICE,
+					envs.MAILER_EMAIL,
+					envs.MAILER_SECRET_KEY,
+					envs.SEND_EMAIL,
+				),
+			).checkDueDatesOfTasks();
 		});
 	}
 

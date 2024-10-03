@@ -5,15 +5,22 @@ import { UploadedFile } from 'express-fileupload';
 export class UpdateUserDto {
 	constructor(
 		public id: string,
-		public name: string,
-		public updatedAt: Date,
+		public name?: string,
+		public emailNotifications?: boolean,
 		public imageFile?: UploadedFile,
 		public password?: string,
+		public updatedAt?: Date,
 	) {}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static create(object: { [key: string]: any }): [string?, UpdateUserDto?] {
-		const { id, name, password, image } = object;
+		const {
+			id,
+			name,
+			emailNotifications = false,
+			password,
+			image,
+		} = object;
 
 		if (!id) return ['Missing id.'];
 
@@ -22,6 +29,12 @@ export class UpdateUserDto {
 
 		if (password && password.length < 6) return ['Password is too short.'];
 		if (password && password.length > 100) return ['Password is too long.'];
+
+		let emailNotificationsBoolean = emailNotifications;
+
+		if (typeof emailNotifications !== 'boolean') {
+			emailNotificationsBoolean = emailNotifications === 'true';
+		}
 
 		if (image) {
 			const validExtensions = ['png', 'jpg', 'jpeg', 'gif'];
@@ -42,7 +55,14 @@ export class UpdateUserDto {
 
 		return [
 			undefined,
-			new UpdateUserDto(id, name, new Date(), image, password),
+			new UpdateUserDto(
+				id,
+				name,
+				emailNotificationsBoolean,
+				image,
+				password,
+				new Date(),
+			),
 		];
 	}
 }

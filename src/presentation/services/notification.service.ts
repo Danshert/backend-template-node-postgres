@@ -5,6 +5,7 @@ import { ReminderTime, Task } from '@prisma/client';
 
 import { webpush } from '../../config';
 import { WssService } from './wss.service';
+import { EmailService } from './email.service';
 
 import { NotificationEntity } from '../../domain/entities';
 
@@ -32,7 +33,10 @@ interface PushSubscription {
 
 export class NotificationService {
 	// eslint-disable-next-line no-unused-vars
-	constructor(private readonly wssService = WssService.instance) {}
+	constructor(
+		private readonly emailService: EmailService,
+		private readonly wssService = WssService.instance,
+	) {}
 
 	subscription = async (userId: string, subscription: PushSubscription) => {
 		const userData = await prisma.user.findFirst({
@@ -202,6 +206,21 @@ export class NotificationService {
 						.catch(() => {});
 				}),
 			);
+
+			if (userData?.emailNotifications) {
+				const html = `
+					<h1>Una tarea está por vencer</h1>
+					<p>${notification.message}</p>
+				`;
+
+				const options = {
+					to: userData.email,
+					subject: 'Una tarea está por vencer',
+					htmlBody: html,
+				};
+
+				await this.emailService.sendEmail(options);
+			}
 		} catch (error) {
 			throw CustomError.internalServer(`${error}`);
 		}

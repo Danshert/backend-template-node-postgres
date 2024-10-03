@@ -25,6 +25,7 @@ model User {
   password String @db.VarChar(100)
   emailValidated Boolean @default(false)
   pushSubscriptions String[] @default([])
+  emailNotifications Boolean @default(false)
   imageUrl String?
   role Role[] @default([USER_ROLE])
   createdAt DateTime @db.Timestamp() @default(now())

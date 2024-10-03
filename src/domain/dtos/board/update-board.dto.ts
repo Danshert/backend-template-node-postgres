@@ -10,7 +10,7 @@ export class UpdateBoardDto {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static create(props: { [key: string]: any }): [string?, UpdateBoardDto?] {
-		const { id, userId, name = false, isActive = true } = props;
+		const { id, userId, name, isActive = true } = props;
 
 		if (!id) return ['Missing ID.'];
 		if (!userId) return ['Missing user ID.'];
