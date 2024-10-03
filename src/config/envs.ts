@@ -15,5 +15,8 @@ export const envs = {
 	MAILER_EMAIL: get('MAILER_EMAIL').required().asString(),
 	MAILER_SECRET_KEY: get('MAILER_SECRET_KEY').required().asString(),
 
+	PUBLIC_VAPID_KEY: get('PUBLIC_VAPID_KEY').required().asString(),
+	PRIVATE_VAPID_KEY: get('PRIVATE_VAPID_KEY').required().asString(),
+
 	WEB_SERVICE_URL: get('WEB_SERVICE_URL').required().asString(),
 };
