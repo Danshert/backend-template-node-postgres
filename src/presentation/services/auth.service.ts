@@ -37,16 +37,13 @@ export class AuthService {
 				},
 			});
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, ...userEntity } = UserEntity.fromObject(user);
-
 			const token = await JwtAdapter.generateToken({ id: user.id });
 
 			if (!token) {
 				throw CustomError.internalServer('Error while creating JWT');
 			}
 
-			return { user: userEntity, token };
+			return { user: UserEntity.fromObject(user), token };
 		} catch (error) {
 			throw CustomError.internalServer(`${error}`);
 		}
@@ -65,17 +62,13 @@ export class AuthService {
 				throw CustomError.unauthorized(`Account not activated`);
 			}
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, emailValidated, ...userEntity } =
-				UserEntity.fromObject(user);
-
 			const token = await JwtAdapter.generateToken({ id: user.id });
 
 			if (!token) {
 				throw CustomError.internalServer('Error while creating JWT');
 			}
 
-			return { user: userEntity, token };
+			return { user: UserEntity.fromObject(user), token };
 		} else {
 			throw CustomError.unauthorized(`Invalid data`);
 		}
@@ -116,19 +109,13 @@ export class AuthService {
 				data: { ...updatedData, imageUrl: fileUrl },
 			});
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, emailValidated, ...updatedUser } =
-				UserEntity.fromObject(user);
-
-			const token = await JwtAdapter.generateToken({
-				id: updatedUser.id,
-			});
+			const token = await JwtAdapter.generateToken({ id: user.id });
 
 			if (!token) {
 				throw CustomError.internalServer('Error while creating JWT');
 			}
 
-			return { user: updatedUser, token };
+			return { user: UserEntity.fromObject(user), token };
 		} catch {
 			throw CustomError.notFound(`User not found`);
 		}
@@ -156,11 +143,7 @@ export class AuthService {
 			throw CustomError.unauthorized(`Account not activated`);
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { password, emailValidated, ...userEntity } =
-			UserEntity.fromObject(user);
-
-		return { user: userEntity, token: newToken };
+		return { user: UserEntity.fromObject(user), token: newToken };
 	};
 
 	private sendEmailValidationLink = async (email: string) => {

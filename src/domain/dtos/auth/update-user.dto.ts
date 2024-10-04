@@ -24,8 +24,7 @@ export class UpdateUserDto {
 
 		if (!id) return ['Missing id.'];
 
-		if (!name) return ['Missing name.'];
-		if (name.length > 200) return ['Name is too long.'];
+		if (name && name.length > 200) return ['Name is too long.'];
 
 		if (password && password.length < 6) return ['Password is too short.'];
 		if (password && password.length > 100) return ['Password is too long.'];

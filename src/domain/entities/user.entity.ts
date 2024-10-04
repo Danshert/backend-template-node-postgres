@@ -10,8 +10,6 @@ export class UserEntity {
 		public id: string,
 		public name: string,
 		public email: string,
-		public emailValidated: boolean,
-		public password: string,
 		public emailNotifications: boolean,
 		public role: UserRole[],
 		public createdAt: string,
@@ -25,8 +23,6 @@ export class UserEntity {
 			id,
 			name,
 			email,
-			emailValidated,
-			password,
 			emailNotifications,
 			role,
 			createdAt,
@@ -37,20 +33,12 @@ export class UserEntity {
 		if (!id) throw CustomError.badRequest('Missing id');
 		if (!name) throw CustomError.badRequest('Missing name');
 		if (!email) throw CustomError.badRequest('Missing email');
-
-		if (emailValidated === undefined) {
-			throw CustomError.badRequest('Missing emailValdiated');
-		}
-
-		if (!password) throw CustomError.badRequest('Missing password');
 		if (!role) throw CustomError.badRequest('Missing role');
 
 		return new UserEntity(
 			id,
 			name,
 			email,
-			emailValidated,
-			password,
 			emailNotifications,
 			role,
 			createdAt,
