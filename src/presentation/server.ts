@@ -4,8 +4,10 @@ import cors from 'cors';
 
 import compression from 'compression';
 import fileUpload from 'express-fileupload';
+import swaggerUi from 'swagger-ui-express';
 
 import { envs } from '../config';
+import { swaggerSpec } from './swagger';
 
 import { CronService } from './cron/cron-service';
 import { EmailService, NotificationService } from './services';
@@ -46,6 +48,13 @@ export class Server {
 
 		//* Public Folder
 		this.app.use(express.static(this.publicPath));
+
+		//* API DOCS
+		this.app.use(
+			'/api/docs/',
+			swaggerUi.serve,
+			swaggerUi.setup(swaggerSpec),
+		);
 
 		//* SPA
 		this.app.get('*', (request, response) => {
