@@ -124,7 +124,7 @@ export class AuthRoutes {
 		/**
 		 * @swagger
 		 * /api/auth/renew-token:
-		 *   post:
+		 *   get:
 		 *     summary: Generate new token
 		 *     security:
 		 *       - bearerAuth: []
@@ -142,7 +142,7 @@ export class AuthRoutes {
 		 *       500:
 		 *         description: Internal server error
 		 */
-		router.post(
+		router.get(
 			'/renew-token',
 			[AuthMiddleware.validateJWT],
 			controller.renewToken,
