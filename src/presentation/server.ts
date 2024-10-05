@@ -57,7 +57,7 @@ export class Server {
 		);
 
 		//* SPA
-		this.app.get('*', (request, response) => {
+		this.app.get(/^\/(?!api).*/, (request, response) => {
 			const indexPath = path.join(
 				// eslint-disable-next-line no-undef
 				__dirname + `../../../${this.publicPath}/index.html`,
