@@ -29,6 +29,8 @@ export class BoardController {
 	};
 
 	getBoards = async (request: Request, response: Response) => {
+		console.log(response);
+
 		const [error, getBoardsDto] = GetBoardsDto.create({
 			...request.query,
 			...request.body,
@@ -45,7 +47,7 @@ export class BoardController {
 
 		this.boardService
 			.getBoards(getBoardsDto!, paginationDto!)
-			.then((boards) => response.status(201).json(boards))
+			.then((boards) => response.status(200).json(boards))
 			.catch((error) => this.handleError(error, response));
 	};
 
