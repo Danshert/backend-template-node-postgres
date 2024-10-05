@@ -33,7 +33,7 @@ export class AuthController {
 
 		this.authService
 			.registerUser(registerUserDto!)
-			.then((user) => response.json(user))
+			.then((user) => response.status(201).json(user))
 			.catch((error) => this.handleError(error, response));
 	};
 

@@ -135,9 +135,7 @@ export class AuthService {
 
 		const user = await prisma.user.findFirst({ where: { id } });
 
-		if (!user) {
-			throw CustomError.internalServer('Error while getting user');
-		}
+		if (!user) throw CustomError.notFound('User not found');
 
 		if (!user.emailValidated) {
 			throw CustomError.unauthorized(`Account not activated`);
@@ -204,7 +202,7 @@ export class AuthService {
 
 		const user = await prisma.user.findFirst({ where: { email } });
 
-		if (!user) throw CustomError.internalServer('Email not exists');
+		if (!user) throw CustomError.notFound('User not found');
 
 		await this.sendEmailChangePasswordLink(user.email);
 

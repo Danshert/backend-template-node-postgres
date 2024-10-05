@@ -21,5 +21,34 @@ export class AppRoutes {
 		router.use('/api/notifications', NotificationRoutes.routes);
 
 		return router;
+
+		/**
+		 * @swagger
+		 * components:
+		 *   securitySchemes:
+		 *     bearerAuth:
+		 *       type: http
+		 *       scheme: bearer
+		 *       bearerFormat: JWT
+		 */
+
+		/**
+		 * @swagger
+		 * components:
+		 *   schemas:
+		 *     loginSchema:
+		 *       type: object
+		 *       properties:
+		 *         email:
+		 *           type: string
+		 *           format: email
+		 *           description: User email
+		 *         password:
+		 *           type: string
+		 *           description: User password
+		 *       required:
+		 *         - email
+		 *         - password
+		 */
 	}
 }
