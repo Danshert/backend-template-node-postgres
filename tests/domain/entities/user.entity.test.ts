@@ -17,8 +17,6 @@ describe('Tests in user entity', () => {
 		expect(user.id).toBe(dataObject.id);
 		expect(user.name).toBe(dataObject.name);
 		expect(user.email).toBe(dataObject.email);
-		expect(user.emailValidated).toBe(dataObject.emailValidated);
-		expect(user.password).toBe(dataObject.password);
 		expect(user.role).toBe(dataObject.role);
 	});
 

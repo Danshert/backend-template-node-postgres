@@ -1,13 +1,21 @@
 import request from 'supertest';
 
+import { createServer } from 'http';
 import { v4 as uuidv4 } from 'uuid';
 
 import { prisma } from '../../../src/data/postgres';
 
 import { testServer } from '../../test-server';
+import { WssService } from '../../../src/presentation/services';
+import { AppRoutes } from '../../../src/presentation/routes';
 
 describe('Tests in label routes', () => {
 	beforeEach(async () => {
+		const httpServer = createServer(testServer.app);
+		WssService.initWss({ server: httpServer });
+
+		testServer.setRoutes(AppRoutes.routes);
+
 		await testServer.start();
 	});
 
@@ -31,7 +39,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -66,7 +74,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -108,7 +116,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -158,7 +166,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },

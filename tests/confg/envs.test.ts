@@ -12,6 +12,8 @@ describe('Tests in envs', () => {
 			MAILER_SERVICE: 'gmail',
 			MAILER_EMAIL: expect.any(String),
 			MAILER_SECRET_KEY: expect.any(String),
+			PUBLIC_VAPID_KEY: expect.any(String),
+			PRIVATE_VAPID_KEY: expect.any(String),
 			WEB_SERVICE_URL: expect.any(String),
 		});
 	});

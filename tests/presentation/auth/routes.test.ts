@@ -1,13 +1,23 @@
 import request from 'supertest';
+
+import { createServer } from 'http';
 import { v4 as uuidv4 } from 'uuid';
 
 import { prisma } from '../../../src/data/postgres';
 
-import { testServer } from '../../test-server';
 import { UserRole } from '../../../src/domain/entities';
+
+import { testServer } from '../../test-server';
+import { WssService } from '../../../src/presentation/services';
+import { AppRoutes } from '../../../src/presentation/routes';
 
 describe('Tests in auth routes', () => {
 	beforeAll(async () => {
+		const httpServer = createServer(testServer.app);
+		WssService.initWss({ server: httpServer });
+
+		testServer.setRoutes(AppRoutes.routes);
+
 		await testServer.start();
 	});
 
@@ -27,14 +37,14 @@ describe('Tests in auth routes', () => {
 		const { body } = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		expect(body).toEqual({
 			user: {
 				id: expect.any(String),
 				name: userData.name,
 				email: userData.email,
-				emailValidated: false,
+				emailNotifications: expect.any(Boolean),
 				role: [UserRole.user],
 				imageUrl: null,
 				createdAt: expect.any(String),
@@ -56,7 +66,7 @@ describe('Tests in auth routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -73,6 +83,7 @@ describe('Tests in auth routes', () => {
 				id: user.id,
 				name: user.name,
 				email: user.email,
+				emailNotifications: expect.any(Boolean),
 				role: user.role,
 				imageUrl: null,
 				createdAt: expect.any(String),
@@ -94,7 +105,7 @@ describe('Tests in auth routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -116,6 +127,7 @@ describe('Tests in auth routes', () => {
 				...updatedData,
 				id: user.id,
 				email: user.email,
+				emailNotifications: expect.any(Boolean),
 				role: user.role,
 				imageUrl: null,
 				createdAt: expect.any(String),
@@ -137,7 +149,7 @@ describe('Tests in auth routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -154,6 +166,7 @@ describe('Tests in auth routes', () => {
 				id: user.id,
 				name: user.name,
 				email: user.email,
+				emailNotifications: expect.any(Boolean),
 				role: user.role,
 				imageUrl: null,
 				createdAt: expect.any(String),
@@ -175,7 +188,7 @@ describe('Tests in auth routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -200,7 +213,7 @@ describe('Tests in auth routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },

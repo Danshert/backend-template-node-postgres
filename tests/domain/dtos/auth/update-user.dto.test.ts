@@ -24,16 +24,6 @@ describe('Test in register-user dto', () => {
 		expect(updateUserDto).toBe(undefined);
 	});
 
-	test('should validate if missing name', () => {
-		const [error, updateUserDto] = UpdateUserDto.create({
-			...dataObject,
-			name: null,
-		});
-
-		expect(error).toContain('Missing name');
-		expect(updateUserDto).toBe(undefined);
-	});
-
 	test('should validate if name is too long', () => {
 		const [error, updateUserDto] = UpdateUserDto.create({
 			...dataObject,

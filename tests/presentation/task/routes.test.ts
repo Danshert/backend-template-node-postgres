@@ -1,17 +1,25 @@
 import request from 'supertest';
 import { toBeOneOf } from 'jest-extended';
 
+import { createServer } from 'http';
 import { v4 as uuidv4 } from 'uuid';
 
 import { prisma } from '../../../src/data/postgres';
+import { TaskStatus } from '@prisma/client';
 
 import { testServer } from '../../test-server';
-import { TaskStatus } from '@prisma/client';
+import { WssService } from '../../../src/presentation/services';
+import { AppRoutes } from '../../../src/presentation/routes';
 
 expect.extend({ toBeOneOf });
 
 describe('Tests in label routes', () => {
 	beforeAll(async () => {
+		const httpServer = createServer(testServer.app);
+		WssService.initWss({ server: httpServer });
+
+		testServer.setRoutes(AppRoutes.routes);
+
 		await testServer.start();
 	});
 
@@ -37,7 +45,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -81,7 +89,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -124,7 +132,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -153,7 +161,7 @@ describe('Tests in label routes', () => {
 			description: '',
 			endDate: expect.toBeOneOf([expect.any(String), null]),
 			status: TaskStatus.TODO,
-			reminder: false,
+			reminderTime: expect.any(String),
 			startDate: expect.toBeOneOf([expect.any(String), null]),
 			labels: [],
 			createdAt: expect.any(String),
@@ -174,7 +182,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
@@ -211,9 +219,9 @@ describe('Tests in label routes', () => {
 			description: task.description,
 			endDate: expect.toBeOneOf([expect.any(String), null]),
 			status: task.status,
-			reminder: task.reminder,
 			startDate: expect.toBeOneOf([expect.any(String), null]),
 			labels: [],
+			reminderTime: expect.any(String),
 			createdAt: expect.any(String),
 			updatedAt: expect.any(String),
 			isActive: true,
@@ -232,7 +240,7 @@ describe('Tests in label routes', () => {
 		} = await request(testServer.app)
 			.post('/api/auth/register')
 			.send(userData)
-			.expect(200);
+			.expect(201);
 
 		await prisma.user.update({
 			where: { id: user.id },
