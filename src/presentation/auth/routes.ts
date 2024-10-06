@@ -153,23 +153,17 @@ export class AuthRoutes {
 		/**
 		 * @swagger
 		 * /api/auth/request-password-change:
-		 *   post:
+		 *   get:
 		 *     summary: Request password change
 		 *     tags:
 		 *       - Auth
-		 *     requestBody:
-		 *       description: Email user
-		 *       required: true
-		 *       content:
-		 *         application/json:
-		 *           schema:
-		 *             type: object
-		 *             properties:
-		 *               email:
-		 *                 type: string
-		 *                 format: email
-		 *             required:
-		 *               - email
+		 *     parameters:
+		 *       - in: query
+		 *         name: email
+		 *         required: true
+		 *         schema:
+		 *           type: string
+		 *           format: email
 		 *     responses:
 		 *       200:
 		 *         description: Email sended
@@ -180,7 +174,7 @@ export class AuthRoutes {
 		 *       500:
 		 *         description: Internal server error
 		 */
-		router.post(
+		router.get(
 			'/request-password-change',
 			controller.requestPasswordChange,
 		);
