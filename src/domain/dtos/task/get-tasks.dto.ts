@@ -17,6 +17,17 @@ export class GetTasksDto {
 
 		if (!boardId) return ['Missing board ID.'];
 
+		if (
+			status &&
+			![TaskStatus.TODO, TaskStatus.DONE, TaskStatus.DONE].includes(
+				status,
+			)
+		) {
+			return [
+				`It's not a valid status. Valid ones: ${[TaskStatus.TODO, TaskStatus.DONE, TaskStatus.DONE].toString()}`,
+			];
+		}
+
 		let isActiveBoolean = isActive;
 
 		if (typeof isActive !== 'boolean') {

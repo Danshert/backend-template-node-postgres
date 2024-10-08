@@ -22,4 +22,13 @@ describe('Tests in get-boards dto', () => {
 		expect(error).toContain('Missing user ID');
 		expect(getBoardsDto).toBe(undefined);
 	});
+
+	test('should validate if isActive is boolean', () => {
+		const [, getBoardsDto] = GetBoardsDto.create({
+			...dataObject,
+			isActive: 'true',
+		});
+
+		expect(getBoardsDto?.isActive).toStrictEqual(expect.any(Boolean));
+	});
 });

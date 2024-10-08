@@ -31,11 +31,11 @@ export class UpdateTaskDto {
 
 		if (!id) return ['Missing ID.'];
 
-		if (title.length > 200) return ['Title is too long.'];
+		if (title && title.length > 200) return ['Title is too long.'];
 
 		if (!userId) return ['Missing user ID.'];
 
-		if (!isNaN(startDate) || !isNaN(endDate)) {
+		if (!isNaN(Date.parse(startDate)) || !isNaN(Date.parse(endDate))) {
 			return ["It's not a valid datetime."];
 		}
 
@@ -59,11 +59,13 @@ export class UpdateTaskDto {
 			});
 		}
 
-		const taskStatus = [TaskStatus.TODO, TaskStatus.DONE, TaskStatus.DONE];
-
-		if (!taskStatus.includes(status)) {
+		if (
+			![TaskStatus.TODO, TaskStatus.DONE, TaskStatus.DONE].includes(
+				status,
+			)
+		) {
 			return [
-				`It's not a valid status. Valid ones: ${taskStatus.toString()}`,
+				`It's not a valid status. Valid ones: ${[TaskStatus.TODO, TaskStatus.DONE, TaskStatus.DONE].toString()}`,
 			];
 		}
 
@@ -78,8 +80,6 @@ export class UpdateTaskDto {
 			ReminderTime.DAY_1,
 			ReminderTime.DAYS_2,
 		];
-
-		console.log('reminderTime', reminderTime);
 
 		if (reminderTime && !reminderTimes.includes(reminderTime)) {
 			return [

@@ -34,8 +34,7 @@ export class TaskEntity {
 		} = object;
 
 		if (!_id && !id) throw CustomError.badRequest('Missing id');
-		if (!title) throw CustomError.badRequest('Missing name');
-		if (!status) throw CustomError.badRequest('Missing status');
+		if (!title) throw CustomError.badRequest('Missing title');
 
 		// const idsLabels
 

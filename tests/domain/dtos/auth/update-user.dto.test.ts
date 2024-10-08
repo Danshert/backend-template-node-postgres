@@ -54,4 +54,35 @@ describe('Test in register-user dto', () => {
 		expect(error).toContain('Password is too long');
 		expect(updateUserDto).toBe(undefined);
 	});
+
+	test('should validate if emailNotifications is boolean', () => {
+		const [, updateUserDto] = UpdateUserDto.create({
+			...dataObject,
+			emailNotifications: 'true',
+		});
+
+		expect(updateUserDto?.emailNotifications).toStrictEqual(
+			expect.any(Boolean),
+		);
+	});
+
+	test('should validate if type image is valid', () => {
+		const [error, updateUserDto] = UpdateUserDto.create({
+			...dataObject,
+			image: { mimetype: 'application/pdf' },
+		});
+
+		expect(error).toContain('Invalid extension');
+		expect(updateUserDto).toBe(undefined);
+	});
+
+	test('should validate if size image is valid', () => {
+		const [error, updateUserDto] = UpdateUserDto.create({
+			...dataObject,
+			image: { mimetype: 'application/jpg', size: 20000000 },
+		});
+
+		expect(error).toContain('File size is too large');
+		expect(updateUserDto).toBe(undefined);
+	});
 });
