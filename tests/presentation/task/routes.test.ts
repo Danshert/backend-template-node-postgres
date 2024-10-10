@@ -24,12 +24,6 @@ describe('Tests in label routes', () => {
 	});
 
 	afterAll(async () => {
-		await prisma.labelsOnTask.deleteMany();
-		await prisma.task.deleteMany();
-		await prisma.label.deleteMany();
-		await prisma.board.deleteMany();
-		await prisma.user.deleteMany();
-
 		testServer.close();
 	});
 
@@ -75,6 +69,9 @@ describe('Tests in label routes', () => {
 			prev: expect.toBeOneOf([expect.any(String), null]),
 			total: expect.any(Number),
 		});
+
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should get task - /api/tasks', async () => {
@@ -118,6 +115,10 @@ describe('Tests in label routes', () => {
 			.expect(200);
 
 		expect(body).toEqual({ ...task, labels: [] });
+
+		await prisma.task.delete({ where: { id: task.id } });
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should create task - /api/tasks', async () => {
@@ -168,6 +169,10 @@ describe('Tests in label routes', () => {
 			updatedAt: expect.any(String),
 			isActive: true,
 		});
+
+		await prisma.task.delete({ where: { id: task.id } });
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should update task - /api/tasks', async () => {
@@ -226,6 +231,10 @@ describe('Tests in label routes', () => {
 			updatedAt: expect.any(String),
 			isActive: true,
 		});
+
+		await prisma.task.delete({ where: { id: task.id } });
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should delete task - /api/tasks', async () => {
@@ -269,5 +278,8 @@ describe('Tests in label routes', () => {
 			.expect(200);
 
 		expect(deletedTask).toEqual(task);
+
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 });

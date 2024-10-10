@@ -168,7 +168,7 @@ export class AuthService {
 		const isSet = await this.emailService.sendEmail(options);
 
 		if (!isSet) {
-			throw CustomError.internalServer('Error senidng email');
+			throw CustomError.internalServer('Error sending email');
 		}
 
 		return true;
@@ -233,7 +233,7 @@ export class AuthService {
 		const isSet = await this.emailService.sendEmail(options);
 
 		if (!isSet) {
-			throw CustomError.internalServer('Error senidng email');
+			throw CustomError.internalServer('Error sending email');
 		}
 
 		return true;

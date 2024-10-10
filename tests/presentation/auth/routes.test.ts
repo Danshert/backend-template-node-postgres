@@ -22,8 +22,6 @@ describe('Tests in auth routes', () => {
 	});
 
 	afterAll(async () => {
-		await prisma.user.deleteMany();
-
 		testServer.close();
 	});
 
@@ -52,6 +50,8 @@ describe('Tests in auth routes', () => {
 			},
 			token: expect.any(String),
 		});
+
+		await prisma.user.delete({ where: { id: body.user.id } });
 	});
 
 	test('should login user - /api/auth/login', async () => {
@@ -91,6 +91,8 @@ describe('Tests in auth routes', () => {
 			},
 			token: expect.any(String),
 		});
+
+		await prisma.user.delete({ where: { id: body.user.id } });
 	});
 
 	test('should update user - /api/auth/update', async () => {
@@ -135,6 +137,8 @@ describe('Tests in auth routes', () => {
 			},
 			token: expect.any(String),
 		});
+
+		await prisma.user.delete({ where: { id: body.user.id } });
 	});
 
 	test('should renew token - /api/auth/renew-token', async () => {
@@ -174,6 +178,8 @@ describe('Tests in auth routes', () => {
 			},
 			token: expect.any(String),
 		});
+
+		await prisma.user.delete({ where: { id: body.user.id } });
 	});
 
 	test('should request password change - /api/auth/request-password-change', async () => {
@@ -223,5 +229,7 @@ describe('Tests in auth routes', () => {
 		await request(testServer.app)
 			.get(`/api/auth/new-password/${token}`)
 			.expect(200);
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 });

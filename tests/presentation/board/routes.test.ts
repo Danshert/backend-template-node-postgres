@@ -23,9 +23,6 @@ describe('Tests in board routes', () => {
 	});
 
 	afterAll(async () => {
-		await prisma.board.deleteMany();
-		await prisma.user.deleteMany();
-
 		testServer.close();
 	});
 
@@ -62,6 +59,8 @@ describe('Tests in board routes', () => {
 			prev: expect.toBeOneOf([expect.any(String), null]),
 			total: expect.any(Number),
 		});
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should get board - /api/boards/id', async () => {
@@ -103,6 +102,9 @@ describe('Tests in board routes', () => {
 			updatedAt: expect.any(String),
 			isActive: expect.any(Boolean),
 		});
+
+		await prisma.board.delete({ where: { id: body.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should create board - /api/boards', async () => {
@@ -139,6 +141,9 @@ describe('Tests in board routes', () => {
 			updatedAt: expect.any(String),
 			isActive: true,
 		});
+
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should update board - /api/boards', async () => {
@@ -183,6 +188,9 @@ describe('Tests in board routes', () => {
 			updatedAt: expect.any(String),
 			isActive: true,
 		});
+
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should delete board - /api/boards', async () => {
@@ -224,5 +232,7 @@ describe('Tests in board routes', () => {
 			updatedAt: expect.any(String),
 			isActive: expect.any(Boolean),
 		});
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 });

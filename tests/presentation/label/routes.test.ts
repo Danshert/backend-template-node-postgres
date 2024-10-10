@@ -20,10 +20,6 @@ describe('Tests in label routes', () => {
 	});
 
 	afterEach(async () => {
-		await prisma.label.deleteMany();
-		await prisma.board.deleteMany();
-		await prisma.user.deleteMany();
-
 		testServer.close();
 	});
 
@@ -60,6 +56,9 @@ describe('Tests in label routes', () => {
 			.expect(200);
 
 		expect(body).toBeInstanceOf(Array);
+
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should create label - /api/labels', async () => {
@@ -102,6 +101,10 @@ describe('Tests in label routes', () => {
 			name: expect.any(String),
 			color: null,
 		});
+
+		await prisma.label.delete({ where: { id: label.id } });
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should update label - /api/labels', async () => {
@@ -152,6 +155,10 @@ describe('Tests in label routes', () => {
 			name: updatedData.name,
 			color: null,
 		});
+
+		await prisma.label.delete({ where: { id: label.id } });
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should delete label - /api/labels', async () => {
@@ -195,5 +202,8 @@ describe('Tests in label routes', () => {
 			.expect(200);
 
 		expect(deletedLabel).toEqual(label);
+
+		await prisma.board.delete({ where: { id: board.id } });
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 });
