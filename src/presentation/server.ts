@@ -9,8 +9,7 @@ import swaggerUi from 'swagger-ui-express';
 import { envs } from '../config';
 import { swaggerSpec } from './swagger';
 
-import { CronService } from './cron/cron-service';
-import { EmailService, NotificationService } from './services';
+import { CronService, EmailService, NotificationService } from './services';
 
 interface Options {
 	port: number;

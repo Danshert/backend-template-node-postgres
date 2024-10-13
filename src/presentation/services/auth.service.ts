@@ -135,6 +135,8 @@ export class AuthService {
 
 		const user = await prisma.user.findFirst({ where: { id } });
 
+		console.log(user);
+
 		if (!user) throw CustomError.notFound('User not found');
 
 		if (!user.emailValidated) {

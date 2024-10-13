@@ -1,5 +1,6 @@
 export { AuthService } from './auth.service';
 export { BoardService } from './board.service';
+export { CronService } from './cron.service';
 export { EmailService } from './email.service';
 export { FileUploadService } from './file-upload.service';
 export { LabelService } from './label.service';

@@ -60,6 +60,8 @@ describe('Tests in auth service', () => {
 
 		expect(user).toBeInstanceOf(UserEntity);
 		expect(typeof token).toBe('string');
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should login user', async () => {
@@ -86,6 +88,8 @@ describe('Tests in auth service', () => {
 
 		expect(user).toBeInstanceOf(UserEntity);
 		expect(typeof token).toBe('string');
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: Account not activated in login', async () => {
@@ -99,7 +103,7 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		await authService.registerUser(registerUserDto!);
+		const { user } = await authService.registerUser(registerUserDto!);
 
 		const [, loginUserDto] = LoginUserDto.create(userData);
 
@@ -108,6 +112,8 @@ describe('Tests in auth service', () => {
 		} catch (error) {
 			expect(`${error}`).toContain('Account not activated');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: Invalid data in login', async () => {
@@ -121,7 +127,7 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		await authService.registerUser(registerUserDto!);
+		const { user } = await authService.registerUser(registerUserDto!);
 
 		const [, loginUserDto] = LoginUserDto.create({
 			...userData,
@@ -133,6 +139,8 @@ describe('Tests in auth service', () => {
 		} catch (error) {
 			expect(`${error}`).toContain('Invalid data');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should update user', async () => {
@@ -186,6 +194,8 @@ describe('Tests in auth service', () => {
 				...updateData,
 			}),
 		);
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: User not found in update user', async () => {
@@ -199,7 +209,7 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		await authService.registerUser(registerUserDto!);
+		const { user } = await authService.registerUser(registerUserDto!);
 
 		const [, updateUserDto] = UpdateUserDto.create({ id: 'ABC' });
 
@@ -208,6 +218,8 @@ describe('Tests in auth service', () => {
 		} catch (error) {
 			expect(`${error}`).toContain('User not found');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should renew token', async () => {
@@ -233,24 +245,14 @@ describe('Tests in auth service', () => {
 		const { token: newToken } = await authService.renewToken(token + '');
 
 		expect(typeof newToken).toBe('string');
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: User not found in renew token', async () => {
-		const userData = {
-			name: 'Test',
-			email: `${uuidv4()}@test.com`,
-			password: '123456',
-		};
-
 		const authService = new AuthService(emailService);
 
-		const [, registerUserDto] = RegisterUserDto.create(userData);
-
-		await authService.registerUser(registerUserDto!);
-
-		const token = await JwtAdapter.generateToken({
-			email: 'test@test.com',
-		});
+		const token = await JwtAdapter.generateToken({ id: 'ABC' });
 
 		try {
 			await authService.renewToken(token + '');
@@ -270,13 +272,17 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		const { token } = await authService.registerUser(registerUserDto!);
+		const { user, token } = await authService.registerUser(
+			registerUserDto!,
+		);
 
 		try {
 			await authService.renewToken(token + '');
 		} catch (error) {
 			expect(`${error}`).toContain('Account not activated');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should validate email', async () => {
@@ -297,6 +303,8 @@ describe('Tests in auth service', () => {
 		const emailValidated = await authService.validateEmail(token + '');
 
 		expect(emailValidated).toBe(true);
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: Invalid token` in validate email', async () => {
@@ -310,13 +318,17 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		const { token } = await authService.registerUser(registerUserDto!);
+		const { user, token } = await authService.registerUser(
+			registerUserDto!,
+		);
 
 		try {
 			await authService.validateEmail(token + 'ABC');
 		} catch (error) {
 			expect(`${error}`).toContain('Invalid token');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: Email not in token` in validate email', async () => {
@@ -330,13 +342,17 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		const { token } = await authService.registerUser(registerUserDto!);
+		const { user, token } = await authService.registerUser(
+			registerUserDto!,
+		);
 
 		try {
 			await authService.validateEmail(token + '');
 		} catch (error) {
 			expect(`${error}`).toContain('Email not in token');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: Email not exists` in validate email', async () => {
@@ -350,7 +366,7 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		await authService.registerUser(registerUserDto!);
+		const { user } = await authService.registerUser(registerUserDto!);
 
 		const token = await JwtAdapter.generateToken({
 			email: 'test@test.com',
@@ -361,6 +377,8 @@ describe('Tests in auth service', () => {
 		} catch (error) {
 			expect(`${error}`).toContain('Email not exists');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should request password change', async () => {
@@ -382,6 +400,8 @@ describe('Tests in auth service', () => {
 			ok: true,
 			message: 'Email sended',
 		});
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: Email is not valid` in request password change', async () => {
@@ -395,13 +415,15 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		await authService.registerUser(registerUserDto!);
+		const { user } = await authService.registerUser(registerUserDto!);
 
 		try {
 			await authService.requestPasswordChange('email.com');
 		} catch (error) {
 			expect(`${error}`).toContain('Email is not valid');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: User not found` in request password change', async () => {
@@ -415,13 +437,15 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		await authService.registerUser(registerUserDto!);
+		const { user } = await authService.registerUser(registerUserDto!);
 
 		try {
 			await authService.requestPasswordChange('test@email.com');
 		} catch (error) {
 			expect(`${error}`).toContain('User not found');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should validate token to change password', async () => {
@@ -444,6 +468,8 @@ describe('Tests in auth service', () => {
 		);
 
 		expect(tokenValidated).toBe(true);
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: Invalid token` in validate token to change password', async () => {
@@ -457,13 +483,15 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		await authService.registerUser(registerUserDto!);
+		const { user } = await authService.registerUser(registerUserDto!);
 
 		try {
 			await authService.validateTokenToChangePassword('ABC');
 		} catch (error) {
 			expect(`${error}`).toContain('Invalid token');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 
 	test('should return Error message: Error while getting user` in validate token to change password', async () => {
@@ -477,12 +505,16 @@ describe('Tests in auth service', () => {
 
 		const [, registerUserDto] = RegisterUserDto.create(userData);
 
-		const { token } = await authService.registerUser(registerUserDto!);
+		const { user, token } = await authService.registerUser(
+			registerUserDto!,
+		);
 
 		try {
 			await authService.validateTokenToChangePassword(token + '');
 		} catch (error) {
 			expect(`${error}`).toContain('Error while getting user');
 		}
+
+		await prisma.user.delete({ where: { id: user.id } });
 	});
 });

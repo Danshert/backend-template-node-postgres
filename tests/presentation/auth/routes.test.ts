@@ -95,6 +95,32 @@ describe('Tests in auth routes', () => {
 		await prisma.user.delete({ where: { id: body.user.id } });
 	});
 
+	test('should validate if account is not activated', async () => {
+		const userData = {
+			name: 'Test',
+			email: `${uuidv4()}@test.com`,
+			password: '123456',
+		};
+
+		const {
+			body: { user },
+		} = await request(testServer.app)
+			.post('/api/auth/register')
+			.send(userData)
+			.expect(201);
+
+		const {
+			body: { error },
+		} = await request(testServer.app)
+			.post('/api/auth/login')
+			.send({ email: userData.email, password: userData.password })
+			.expect(401);
+
+		expect(`${error}`).toContain('Account not activated');
+
+		await prisma.user.delete({ where: { id: user.id } });
+	});
+
 	test('should update user - /api/auth/update', async () => {
 		const userData = {
 			name: 'Test',
@@ -231,5 +257,27 @@ describe('Tests in auth routes', () => {
 			.expect(200);
 
 		await prisma.user.delete({ where: { id: user.id } });
+	});
+
+	test(`should validate bearer token`, async () => {
+		const {
+			body: { error },
+		} = await request(testServer.app)
+			.get('/api/auth/renew-token')
+			.set('Authorization', `ABC`)
+			.expect(401);
+
+		expect(`${error}`).toContain('Invalid bearer token');
+	});
+
+	test(`should validate invalid token`, async () => {
+		const {
+			body: { error },
+		} = await request(testServer.app)
+			.get('/api/auth/renew-token')
+			.set('Authorization', `Bearer ABC`)
+			.expect(401);
+
+		expect(`${error}`).toContain('Invalid token');
 	});
 });
