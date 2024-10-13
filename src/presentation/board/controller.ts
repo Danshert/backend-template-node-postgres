@@ -29,8 +29,6 @@ export class BoardController {
 	};
 
 	getBoards = async (request: Request, response: Response) => {
-		console.log(response);
-
 		const [error, getBoardsDto] = GetBoardsDto.create({
 			...request.query,
 			...request.body,
