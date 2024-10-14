@@ -1,6 +1,7 @@
 import request from 'supertest';
-
 import { createServer } from 'http';
+
+import fs from 'fs-extra';
 import { v4 as uuidv4 } from 'uuid';
 
 import { AppRoutes } from '../../../src/presentation/routes';
@@ -21,6 +22,8 @@ describe('Tests in type middleware routes', () => {
 
 	afterAll(() => {
 		testServer.close();
+
+		fs.remove(`${__dirname}/../../../uploads/tests/`);
 	});
 
 	test('should upload a single file', async () => {
@@ -45,7 +48,7 @@ describe('Tests in type middleware routes', () => {
 		const filePath = `${__dirname}/../../files/node.jpg`;
 
 		const { body } = await request(testServer.app)
-			.post('/api/upload/single/users')
+			.post('/api/upload/single/tests')
 			.set('Authorization', `Bearer ${token}`)
 			.attach('file', filePath);
 
@@ -77,7 +80,7 @@ describe('Tests in type middleware routes', () => {
 		const filePath = `${__dirname}/../../files/node.jpg`;
 
 		const { body } = await request(testServer.app)
-			.post('/api/upload/multiple/users')
+			.post('/api/upload/multiple/tests')
 			.set('Authorization', `Bearer ${token}`)
 			.attach('file', filePath)
 			.attach('file', filePath);
@@ -112,7 +115,7 @@ describe('Tests in type middleware routes', () => {
 		const {
 			body: { error },
 		} = await request(testServer.app)
-			.post('/api/upload/single/users')
+			.post('/api/upload/single/tests')
 			.set('Authorization', `Bearer ${token}`);
 
 		expect(`${error}`).toContain('No files were selected');

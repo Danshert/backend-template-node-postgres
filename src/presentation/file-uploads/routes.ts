@@ -16,7 +16,7 @@ export class FileUploadRoutes {
 		router.use([
 			AuthMiddleware.validateJWT,
 			FileUploadMiddleware.containFiles,
-			TypeMiddleware.validTypes(['users', 'tasks']),
+			TypeMiddleware.validTypes(['users', 'tasks', 'tests']),
 		]);
 
 		router.post('/single/:type', controller.uploadFile);
