@@ -5,5 +5,7 @@ export { EmailService } from './email.service';
 export { FileUploadService } from './file-upload.service';
 export { LabelService } from './label.service';
 export { NotificationService } from './notification.service';
+export { PrinterService } from './printer.service';
+export { ReportService } from './report.service';
 export { TaskService } from './task.service';
 export { WssService } from './wss.service';
