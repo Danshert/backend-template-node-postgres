@@ -16,7 +16,28 @@ export class ReportsRoutes {
 
 		router.use([AuthMiddleware.validateJWT]);
 
-		router.get('/', controller.generateUserReport);
+		/**
+		 * @swagger
+		 * /api/reports/user:
+		 *   get:
+		 *     summary: Generate user report
+		 *     security:
+		 *       - bearerAuth: []
+		 *     tags:
+		 *       - Reports
+		 *     responses:
+		 *       200:
+		 *         description: Report generated
+		 *       400:
+		 *         description: Token required
+		 *       401:
+		 *         description: Invalid token
+		 *       404:
+		 *         description: User not found
+		 *       500:
+		 *         description: Internal server error
+		 */
+		router.get('/user', controller.generateUserReport);
 
 		return router;
 	}
