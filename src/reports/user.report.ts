@@ -66,6 +66,7 @@ export const getUserReport = async (values: ReportValues) => {
 	});
 
 	const documentDefinition: TDocumentDefinitions = {
+		info: { title: 'Reporte de usuario' },
 		styles: styles,
 		pageMargins: [40, 100, 40, 40],
 		header: headerSection({
